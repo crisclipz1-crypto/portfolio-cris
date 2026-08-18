@@ -169,7 +169,7 @@
     const sections = [
       { id: 'about', links: '[href="#about"]' },
       { id: 'work', links: '[href="#work"]' },
-      { id: 'contact', links: '[href="#contact"]' }
+      { id: 'book', links: '[href="#book"]' }
     ];
 
     sections.forEach(({ id, links }) => {
@@ -269,35 +269,35 @@
   }
 
   /* ============================================
-     PROJECTS - 3D tilt + cursor-following tag
+     GALLERY - 3D tilt + cursor-following tag (bento cells only,
+     the small reel-strip cards stay flat, see 4.5 "not every
+     card needs" restraint).
   ============================================= */
-  function initProjectMicroInteractions() {
+  function initGalleryMicroInteractions() {
     if (!hasGSAP || reduceMotion || noHover) return;
 
-    document.querySelectorAll('[data-project]').forEach((card) => {
-      const media = card.querySelector('.project__media');
-      const tag = card.querySelector('.project__cursor-tag');
-      if (!media) return;
+    document.querySelectorAll('.gallery-item').forEach((card) => {
+      const tag = card.querySelector('.gallery-item__tag');
 
-      const rotateXTo = gsap.quickTo(media, 'rotateX', { duration: 0.6, ease: 'power3.out' });
-      const rotateYTo = gsap.quickTo(media, 'rotateY', { duration: 0.6, ease: 'power3.out' });
+      const rotateXTo = gsap.quickTo(card, 'rotateX', { duration: 0.6, ease: 'power3.out' });
+      const rotateYTo = gsap.quickTo(card, 'rotateY', { duration: 0.6, ease: 'power3.out' });
       const tagXTo = tag ? gsap.quickTo(tag, 'x', { duration: 0.4, ease: 'power3.out' }) : null;
       const tagYTo = tag ? gsap.quickTo(tag, 'y', { duration: 0.4, ease: 'power3.out' }) : null;
 
-      media.addEventListener('mousemove', (e) => {
-        const rect = media.getBoundingClientRect();
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
         const relX = (e.clientX - rect.left) / rect.width - 0.5;
         const relY = (e.clientY - rect.top) / rect.height - 0.5;
-        rotateYTo(relX * 10);
-        rotateXTo(relY * -10);
+        rotateYTo(relX * 8);
+        rotateXTo(relY * -8);
         if (tagXTo) { tagXTo(e.clientX - rect.left); tagYTo(e.clientY - rect.top); }
       });
 
-      media.addEventListener('mouseenter', () => {
+      card.addEventListener('mouseenter', () => {
         if (tag) gsap.to(tag, { opacity: 1, scale: 1, duration: 0.35, ease: 'power3.out' });
       });
 
-      media.addEventListener('mouseleave', () => {
+      card.addEventListener('mouseleave', () => {
         rotateXTo(0);
         rotateYTo(0);
         if (tag) gsap.to(tag, { opacity: 0, scale: 0.7, duration: 0.25, ease: 'power3.in' });
@@ -306,66 +306,70 @@
   }
 
   /* ============================================
-     PROJECTS - cinematic sticky-stack (desktop + motion only)
-     Each project pins at the top of the viewport until the
-     next one arrives, scaling and dimming down as it's covered.
-     Canonical GSAP ScrollTrigger pin pattern: start "top top",
-     pin the outgoing card, scrub its scale/opacity off the
-     incoming card's entrance.
+     GALLERY - hover-to-preview video cells. Muted/looping,
+     preload="none" so the clip only downloads once someone
+     actually hovers, keeping first load light with 11 clips
+     on the page.
   ============================================= */
-  function initProjectStack() {
-    if (!hasGSAP || reduceMotion) return;
-    if (!window.matchMedia('(min-width: 900px)').matches) return;
-
-    const list = document.querySelector('.project-list');
-    const cards = gsap.utils.toArray('.project[data-project]');
-    if (!list || cards.length < 2) return;
-
-    list.classList.add('is-stacked');
-
-    cards.forEach((card, i) => {
-      if (i === cards.length - 1) return;
-      ScrollTrigger.create({
-        trigger: card,
-        start: 'top top',
-        endTrigger: cards[cards.length - 1],
-        end: 'top top',
-        pin: true,
-        pinSpacing: false
-      });
-      gsap.to(card, {
-        scale: 0.94,
-        opacity: 0.5,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: cards[i + 1],
-          start: 'top bottom',
-          end: 'top top',
-          scrub: true
-        }
-      });
+  function initGalleryVideoPreview() {
+    if (noHover) return;
+    document.querySelectorAll('.gallery-item__preview').forEach((video) => {
+      const card = video.closest('.gallery-item');
+      card.addEventListener('mouseenter', () => { video.play().catch(() => {}); });
+      card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
     });
   }
 
   /* ============================================
-     PROJECT IMAGE PARALLAX (subtle depth, non-stacked cards)
+     LIGHTBOX - opens any [data-gallery] item (bento cells and
+     reel-strip cards) full-size: photos as <img>, videos as a
+     real <video> with controls and sound.
   ============================================= */
-  function initProjectParallax() {
-    if (!hasGSAP || reduceMotion) return;
-    document.querySelectorAll('[data-project] .project__media img').forEach((img) => {
-      gsap.fromTo(img,
-        { y: -24 },
-        {
-          y: 24,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: img,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true
-          }
-        }
-      );
+  function initLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    const stage = document.getElementById('lightboxStage');
+    const closeBtn = document.getElementById('lightboxClose');
+    if (!lightbox || !stage || !closeBtn) return;
+
+    function close() {
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      stage.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+
+    function open(src, media) {
+      stage.innerHTML = '';
+      if (media === 'video') {
+        const video = document.createElement('video');
+        video.src = src;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        stage.appendChild(video);
+      } else {
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = '';
+        stage.appendChild(img);
+      }
+      lightbox.classList.add('is-open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    document.querySelectorAll('[data-gallery]').forEach((el) => {
+      el.addEventListener('click', () => {
+        const src = el.getAttribute('data-src');
+        const media = el.getAttribute('data-media');
+        if (src) open(src, media);
+      });
+    });
+
+    closeBtn.addEventListener('click', close);
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) close(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.classList.contains('is-open')) close();
     });
   }
 
@@ -583,8 +587,9 @@
     initDirectionalHover('.nav__link');
     initScrollReveals();
     initTitleReveals();
-    initProjectMicroInteractions();
-    initProjectParallax();
+    initGalleryMicroInteractions();
+    initGalleryVideoPreview();
+    initLightbox();
     initManifesto();
     initHeroVisual();
     initMagnetic();
@@ -592,10 +597,6 @@
     initAccordion();
     initProgress();
     initBackToTop(lenis);
-
-    // Stack layout depends on final geometry of the reveal/tilt setup above,
-    // so it's wired last and gets its own refresh once everything settles.
-    initProjectStack();
 
     runLoader(() => {
       revealNav();
