@@ -525,6 +525,55 @@
   }
 
   /* ============================================
+     HERO PATHS - ambient flowing-line background. Two mirrored SVG
+     layers of curved paths, each with a short dash that loops around
+     it via a CSS animation (see @keyframes hero-path-flow), driven
+     entirely by CSS after this one-time setup - no per-frame JS.
+     Under prefers-reduced-motion the paths still render, just static.
+  ============================================= */
+  function initHeroPaths() {
+    const container = document.querySelector('.hero-paths');
+    if (!container) return;
+    const svgs = container.querySelectorAll('svg');
+    if (svgs.length < 2) return;
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const COUNT = 20;
+
+    function build(svg, position) {
+      for (let i = 0; i < COUNT; i++) {
+        const d = `M-${380 - i * 5 * position} -${189 + i * 6}C-${380 - i * 5 * position} -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${152 - i * 5 * position} ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${684 - i * 5 * position} ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`;
+        const path = document.createElementNS(NS, 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('stroke', 'var(--accent)');
+        path.setAttribute('stroke-width', String(0.5 + i * 0.03));
+        path.setAttribute('fill', 'none');
+        path.style.opacity = String(0.035 + i * 0.006);
+        svg.appendChild(path);
+
+        if (!reduceMotion) {
+          // Most of each path's arc length falls outside the 696x316
+          // viewBox (the curves are drawn far larger than the visible
+          // window on purpose, same as the source component). A short
+          // "comet" dash would spend most of its cycle outside that
+          // window and rarely be seen, so the dash covers most of the
+          // path instead - the animated offset then reads as a slow
+          // gap drifting through, not the line disappearing.
+          const len = path.getTotalLength();
+          path.style.strokeDasharray = `${len * 0.75} ${len * 0.25}`;
+          path.style.setProperty('--path-len', String(len));
+          const duration = 16 + Math.random() * 12;
+          path.style.animation = `hero-path-flow ${duration}s linear infinite`;
+          path.style.animationDelay = `-${Math.random() * duration}s`;
+        }
+      }
+    }
+
+    build(svgs[0], 1);
+    build(svgs[1], -1);
+  }
+
+  /* ============================================
      HERO VISUAL - pointer parallax + idle breathing.
      The breathing loop animates "scale" via GSAP (not a CSS
      @keyframes transform) so it composites cleanly with the
@@ -754,6 +803,7 @@
     initLanguageSwitch();
 
     revealHero();
+    initHeroPaths();
     initAnchorScroll(lenis);
     initNavBehavior();
     initDirectionalHover('.nav__link');
