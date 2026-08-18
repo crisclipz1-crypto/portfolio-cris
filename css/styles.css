@@ -341,19 +341,25 @@ body.has-custom-cursor button {
 .cursor.is-hover .cursor__dot { opacity: 0; }
 
 /* ============================================
-   BACKGROUND PATHS - fixed to the viewport (not the page), so it
-   never scrolls away or cuts off: the same lines are behind the
-   content for the entire scroll length. Sits below main/footer
-   (z-index scheme below) so ordinary page content - text, photos,
-   video - paints over it and hides it wherever it's opaque, with no
-   per-element logic needed. Built at runtime, see
-   initBackgroundPaths in main.js.
+   BACKGROUND PATHS - absolutely positioned against the page (not
+   fixed to the viewport), so the lines scroll WITH the content:
+   as you scroll down the page moves up and the lines travel with
+   it, same as everything else, instead of hovering static on
+   screen. Height is set in JS to the full document height so the
+   pattern (tiled in repeating bands, see initBackgroundPaths in
+   main.js) covers top to bottom with nothing left uncovered. Sits
+   below main/footer (z-index scheme below) so ordinary page content
+   - text, photos, video - paints over it and hides it wherever it's
+   opaque, with no per-element logic needed.
 ============================================= */
 .bg-paths {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   z-index: 1;
   pointer-events: none;
+  overflow: hidden;
 }
 .bg-paths__svg {
   position: absolute;
@@ -366,8 +372,8 @@ body.has-custom-cursor button {
   to { stroke-dashoffset: calc(var(--path-len) * -1); }
 }
 
-/* Content sits above the fixed paths layer; the grain/nav/overlays
-   above that already carry their own higher z-index values. */
+/* Content sits above the paths layer; the grain/nav/overlays above
+   that already carry their own higher z-index values. */
 main, .footer {
   position: relative;
   z-index: 2;
