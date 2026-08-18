@@ -109,75 +109,137 @@ ul { margin: 0; padding: 0; list-style: none; }
 ::selection { background: var(--accent); color: #fff; }
 
 /* ============================================
-   LOADER
-   Wordmark reveals as a duotone mask (outline visible from the
-   start, solid fill wipes across in sync with the counter), sitting
-   over a barber-pole-striped progress bar. On complete the whole
-   panel closes into a circle at center (clip-path, GSAP-driven -
-   see main.js) revealing the page beneath.
+   LOADER - HUD-style boot screen. Deep near-black stage (the one
+   deliberate departure from the page's light theme lock - this is
+   a transient pre-content overlay, not a page section, so it isn't
+   bound by that rule) with corner brackets, a scanline texture, a
+   rotating hex mark, and a glowing wordmark reveal over a shimmering
+   progress bar. Closes into a circle at center on complete (GSAP,
+   see main.js) revealing the light page beneath - the contrast is
+   the point.
 ============================================= */
 .loader {
   position: fixed;
   inset: 0;
   z-index: 300;
-  background: var(--bg);
+  background: #05060a;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
   clip-path: circle(150% at 50% 50%);
+  overflow: hidden;
 }
+.loader__scanlines {
+  position: absolute;
+  inset: -10% -10%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.045) 0px,
+    rgba(255, 255, 255, 0.045) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.5;
+  animation: loader-scan 5s linear infinite;
+}
+@keyframes loader-scan {
+  from { transform: translateY(0); }
+  to { transform: translateY(3px); }
+}
+.loader__corner {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+}
+.loader__corner--tl { top: 26px; left: 26px; border-right: none; border-bottom: none; }
+.loader__corner--tr { top: 26px; right: 26px; border-left: none; border-bottom: none; }
+.loader__corner--bl { bottom: 26px; left: 26px; border-right: none; border-top: none; }
+.loader__corner--br { bottom: 26px; right: 26px; border-left: none; border-top: none; }
+
 .loader__inner {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
+  gap: 18px;
 }
+.loader__spinner {
+  width: 52px;
+  height: 52px;
+  color: var(--accent);
+}
+.loader__spinner svg { width: 100%; height: 100%; }
+.loader__spinner polygon:first-child {
+  transform-origin: 50% 50%;
+  animation: loader-spin 5s linear infinite;
+}
+.loader__spinner polygon:last-child {
+  transform-origin: 50% 50%;
+  opacity: 0.55;
+  animation: loader-spin 3.2s linear infinite reverse;
+}
+@keyframes loader-spin { to { transform: rotate(360deg); } }
+
 .loader__word {
   position: relative;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(32px, 7vw, 76px);
+  font-size: clamp(30px, 6.5vw, 64px);
   letter-spacing: -0.01em;
   white-space: nowrap;
 }
 .loader__word-outline {
   display: block;
   color: transparent;
-  -webkit-text-stroke: 1px var(--border-strong);
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
 }
 .loader__word-fill {
   position: absolute;
   inset: 0;
   display: block;
-  color: var(--ink);
+  color: #fff;
   clip-path: inset(0 100% 0 0);
+  text-shadow: 0 0 22px rgba(0, 55, 255, 0.7), 0 0 46px rgba(0, 55, 255, 0.4);
   will-change: clip-path;
 }
+.loader__tip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: -6px;
+}
+
 .loader__meta {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  width: clamp(220px, 30vw, 320px);
+  margin-top: 8px;
 }
 .loader__bar-track {
-  width: clamp(140px, 22vw, 220px);
-  height: 6px;
-  border-radius: 999px;
+  position: relative;
+  height: 8px;
+  border-radius: 2px;
   overflow: hidden;
-  background: var(--surface);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  margin-bottom: 10px;
 }
 .loader__bar {
+  position: relative;
   height: 100%;
   width: 100%;
-  border-radius: 999px;
   transform: scaleX(0);
   transform-origin: left;
+  overflow: hidden;
   background: repeating-linear-gradient(
     45deg,
     var(--accent) 0 8px,
-    #fff 8px 16px
+    #4d78ff 8px 16px
   );
   animation: barber-stripe 0.6s linear infinite;
+  box-shadow: 0 0 10px rgba(0, 55, 255, 0.85), 0 0 22px rgba(0, 55, 255, 0.45);
 }
 /* 16px stripe period along the 45deg axis = 16*sqrt(2) along a pure
    X shift, so the loop resets with no visible seam. */
@@ -185,12 +247,43 @@ ul { margin: 0; padding: 0; list-style: none; }
   from { background-position: 0 0; }
   to { background-position: 22.63px 0; }
 }
-.loader__count {
+.loader__bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  animation: loader-shimmer 1.3s ease-in-out infinite;
+}
+@keyframes loader-shimmer {
+  from { transform: translateX(-140%); }
+  to { transform: translateX(340%); }
+}
+.loader__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-family: var(--font-mono);
-  font-size: 14px;
-  color: var(--ink);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+.loader__status-label::after {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-left: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: middle;
+  animation: pulse-dot 1s ease-in-out infinite;
+}
+.loader__count {
   font-variant-numeric: tabular-nums;
-  min-width: 34px;
+  color: #fff;
+  font-weight: 500;
 }
 .loader__count::after {
   content: '%';
