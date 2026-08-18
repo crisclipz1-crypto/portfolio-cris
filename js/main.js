@@ -2,7 +2,9 @@
   'use strict';
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const noHover = window.matchMedia('(hover: none)').matches;
   const hasGSAP = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined';
+  const NAV_OFFSET = 76;
 
   if (hasGSAP) gsap.registerPlugin(ScrollTrigger);
 
@@ -12,6 +14,7 @@
   function runLoader(onDone) {
     const loader = document.getElementById('loader');
     const countEl = document.getElementById('loaderCount');
+    const bar = document.getElementById('loaderBar');
 
     if (reduceMotion || !hasGSAP) {
       loader.style.display = 'none';
@@ -24,13 +27,16 @@
       val: 100,
       duration: 1.1,
       ease: 'power2.inOut',
-      onUpdate: () => { countEl.textContent = Math.round(counter.val); },
+      onUpdate: () => {
+        countEl.textContent = Math.round(counter.val);
+        bar.style.transform = `scaleX(${counter.val / 100})`;
+      },
       onComplete: () => {
         gsap.to(loader, {
           yPercent: -100,
-          duration: 0.7,
-          ease: 'power3.inOut',
-          delay: 0.1,
+          duration: 0.75,
+          ease: 'expo.inOut',
+          delay: 0.15,
           onComplete: () => {
             loader.style.display = 'none';
             onDone();
@@ -57,6 +63,32 @@
     gsap.ticker.lagSmoothing(0);
 
     return lenis;
+  }
+
+  /* ============================================
+     ANCHOR NAVIGATION - routes every in-page link
+     through Lenis so scrolling stays consistent,
+     with an offset so the fixed nav never covers
+     the target section's heading.
+  ============================================= */
+  function initAnchorScroll(lenis) {
+    document.querySelectorAll('a[href^="#"]').forEach((link) => {
+      const hash = link.getAttribute('href');
+      if (!hash || hash === '#') return;
+      const target = document.querySelector(hash);
+      if (!target) return;
+
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const offset = hash === '#top' ? 0 : -NAV_OFFSET;
+        if (lenis) {
+          lenis.scrollTo(target, { offset, duration: 1.2 });
+        } else {
+          const top = target.getBoundingClientRect().top + window.scrollY + offset;
+          window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
+        }
+      });
+    });
   }
 
   /* ============================================
@@ -122,10 +154,62 @@
   }
 
   /* ============================================
+     NAV - compact on scroll + scroll-spy active link
+  ============================================= */
+  function initNavBehavior() {
+    const nav = document.querySelector('.nav');
+    if (!nav || !hasGSAP) return;
+
+    ScrollTrigger.create({
+      start: 'top -100',
+      end: 99999,
+      toggleClass: { targets: nav, className: 'is-compact' }
+    });
+
+    const sections = [
+      { id: 'about', links: '[href="#about"]' },
+      { id: 'work', links: '[href="#work"]' },
+      { id: 'contact', links: '[href="#contact"]' }
+    ];
+
+    sections.forEach(({ id, links }) => {
+      const section = document.getElementById(id);
+      if (!section) return;
+      const navEls = document.querySelectorAll(links);
+
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top center',
+        end: 'bottom center',
+        onToggle: (self) => {
+          if (self.isActive) {
+            document.querySelectorAll('.nav__link').forEach(l => l.classList.remove('is-active'));
+            navEls.forEach(l => l.classList.add('is-active'));
+          }
+        }
+      });
+    });
+  }
+
+  /* ============================================
+     DIRECTIONAL UNDERLINE - the hover line grows
+     from whichever edge the cursor entered.
+  ============================================= */
+  function initDirectionalHover(selector) {
+    document.querySelectorAll(selector).forEach((el) => {
+      el.addEventListener('mouseenter', (e) => {
+        const rect = el.getBoundingClientRect();
+        const fromLeft = (e.clientX - rect.left) < rect.width / 2;
+        el.style.setProperty('--underline-origin', fromLeft ? 'left' : 'right');
+      });
+    });
+  }
+
+  /* ============================================
      SCROLL REVEALS (sections below hero)
   ============================================= */
   function initScrollReveals() {
-    const targets = document.querySelectorAll('.about [data-reveal], .work [data-reveal], .services [data-reveal], .contact [data-reveal], .marquee[data-reveal], .hero__marquee-mini[data-reveal]');
+    const targets = document.querySelectorAll('.about [data-reveal], .work [data-reveal], .services [data-reveal], .contact [data-reveal], .marquee[data-reveal]');
 
     if (!hasGSAP || reduceMotion) {
       targets.forEach(el => el.classList.add('is-visible'));
@@ -149,7 +233,122 @@
   }
 
   /* ============================================
-     PROJECT CARD IMAGE PARALLAX (subtle depth)
+     SECTION TITLES - word-by-word clip reveal.
+     Uses the same "top 85%" trigger point as the parent
+     .section-head fade in initScrollReveals so the two always
+     fire together - if the word-mask fired earlier (it used to,
+     at 88%) a slow scroller could sit on a fully-revealed-but-
+     still-invisible title, then see it just flat-fade in later
+     with no visible word reveal left to show.
+  ============================================= */
+  function initTitleReveals() {
+    const titles = document.querySelectorAll('.section-title');
+
+    titles.forEach((title) => {
+      const words = title.textContent.trim().split(/\s+/);
+      title.innerHTML = words.map(w => `<span class="word-reveal"><span>${w}</span></span>`).join(' ');
+    });
+
+    if (!hasGSAP || reduceMotion) return;
+
+    titles.forEach((title) => {
+      const words = title.querySelectorAll('.word-reveal > span');
+      gsap.set(words, { yPercent: 100 });
+      gsap.to(words, {
+        yPercent: 0,
+        duration: 0.9,
+        ease: 'power4.out',
+        stagger: 0.06,
+        scrollTrigger: {
+          trigger: title,
+          start: 'top 85%',
+          toggleActions: 'play none none none'
+        }
+      });
+    });
+  }
+
+  /* ============================================
+     PROJECTS - 3D tilt + cursor-following tag
+  ============================================= */
+  function initProjectMicroInteractions() {
+    if (!hasGSAP || reduceMotion || noHover) return;
+
+    document.querySelectorAll('[data-project]').forEach((card) => {
+      const media = card.querySelector('.project__media');
+      const tag = card.querySelector('.project__cursor-tag');
+      if (!media) return;
+
+      const rotateXTo = gsap.quickTo(media, 'rotateX', { duration: 0.6, ease: 'power3.out' });
+      const rotateYTo = gsap.quickTo(media, 'rotateY', { duration: 0.6, ease: 'power3.out' });
+      const tagXTo = tag ? gsap.quickTo(tag, 'x', { duration: 0.4, ease: 'power3.out' }) : null;
+      const tagYTo = tag ? gsap.quickTo(tag, 'y', { duration: 0.4, ease: 'power3.out' }) : null;
+
+      media.addEventListener('mousemove', (e) => {
+        const rect = media.getBoundingClientRect();
+        const relX = (e.clientX - rect.left) / rect.width - 0.5;
+        const relY = (e.clientY - rect.top) / rect.height - 0.5;
+        rotateYTo(relX * 10);
+        rotateXTo(relY * -10);
+        if (tagXTo) { tagXTo(e.clientX - rect.left); tagYTo(e.clientY - rect.top); }
+      });
+
+      media.addEventListener('mouseenter', () => {
+        if (tag) gsap.to(tag, { opacity: 1, scale: 1, duration: 0.35, ease: 'power3.out' });
+      });
+
+      media.addEventListener('mouseleave', () => {
+        rotateXTo(0);
+        rotateYTo(0);
+        if (tag) gsap.to(tag, { opacity: 0, scale: 0.7, duration: 0.25, ease: 'power3.in' });
+      });
+    });
+  }
+
+  /* ============================================
+     PROJECTS - cinematic sticky-stack (desktop + motion only)
+     Each project pins at the top of the viewport until the
+     next one arrives, scaling and dimming down as it's covered.
+     Canonical GSAP ScrollTrigger pin pattern: start "top top",
+     pin the outgoing card, scrub its scale/opacity off the
+     incoming card's entrance.
+  ============================================= */
+  function initProjectStack() {
+    if (!hasGSAP || reduceMotion) return;
+    if (!window.matchMedia('(min-width: 900px)').matches) return;
+
+    const list = document.querySelector('.project-list');
+    const cards = gsap.utils.toArray('.project[data-project]');
+    if (!list || cards.length < 2) return;
+
+    list.classList.add('is-stacked');
+
+    cards.forEach((card, i) => {
+      if (i === cards.length - 1) return;
+      ScrollTrigger.create({
+        trigger: card,
+        start: 'top top',
+        endTrigger: cards[cards.length - 1],
+        end: 'top top',
+        pin: true,
+        pinSpacing: false
+      });
+      gsap.to(card, {
+        scale: 0.94,
+        opacity: 0.5,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: cards[i + 1],
+          start: 'top bottom',
+          end: 'top top',
+          scrub: true
+        }
+      });
+    });
+  }
+
+  /* ============================================
+     PROJECT IMAGE PARALLAX (subtle depth, non-stacked cards)
   ============================================= */
   function initProjectParallax() {
     if (!hasGSAP || reduceMotion) return;
@@ -199,14 +398,27 @@
   }
 
   /* ============================================
-     HERO VISUAL - POINTER PARALLAX (desktop only)
+     HERO VISUAL - pointer parallax + idle breathing.
+     The breathing loop animates "scale" via GSAP (not a CSS
+     @keyframes transform) so it composites cleanly with the
+     quickTo-driven x/y from the pointer parallax below -
+     mixing a CSS transform animation with GSAP's inline
+     transform on the same element would make the two fight
+     and stall, the same bug the accordion had with height.
   ============================================= */
-  function initHeroPointerParallax() {
-    if (!hasGSAP || reduceMotion) return;
-    const hero = document.querySelector('.hero');
+  function initHeroVisual() {
+    if (!hasGSAP) return;
     const orb = document.querySelector('.hero-visual__orb');
+    if (!orb) return;
+
+    if (!reduceMotion) {
+      gsap.to(orb, { scale: 1.05, duration: 3, ease: 'sine.inOut', repeat: -1, yoyo: true });
+    }
+
+    if (reduceMotion || noHover) return;
+    const hero = document.querySelector('.hero');
     const ring = document.querySelector('.hero-visual__ring');
-    if (!hero || !orb || !ring || window.matchMedia('(hover: none)').matches) return;
+    if (!hero || !ring) return;
 
     const orbTo = gsap.quickTo(orb, 'x', { duration: 0.7, ease: 'power3.out' });
     const orbToY = gsap.quickTo(orb, 'y', { duration: 0.7, ease: 'power3.out' });
@@ -229,14 +441,15 @@
   }
 
   /* ============================================
-     MAGNETIC BUTTONS
+     MAGNETIC BUTTONS (+ tactile press feedback)
   ============================================= */
   function initMagnetic() {
-    if (!hasGSAP || reduceMotion || window.matchMedia('(hover: none)').matches) return;
+    if (!hasGSAP || reduceMotion || noHover) return;
 
     document.querySelectorAll('[data-magnetic]').forEach((btn) => {
       const xTo = gsap.quickTo(btn, 'x', { duration: 0.5, ease: 'power3.out' });
       const yTo = gsap.quickTo(btn, 'y', { duration: 0.5, ease: 'power3.out' });
+      const scaleTo = gsap.quickTo(btn, 'scale', { duration: 0.25, ease: 'power3.out' });
 
       btn.addEventListener('mousemove', (e) => {
         const rect = btn.getBoundingClientRect();
@@ -246,7 +459,9 @@
         yTo(relY * 0.35);
       });
 
-      btn.addEventListener('mouseleave', () => { xTo(0); yTo(0); });
+      btn.addEventListener('mouseleave', () => { xTo(0); yTo(0); scaleTo(1); });
+      btn.addEventListener('pointerdown', () => scaleTo(0.94));
+      btn.addEventListener('pointerup', () => scaleTo(1));
     });
   }
 
@@ -363,15 +578,24 @@
     const lenis = initSmoothScroll();
 
     revealHero();
+    initAnchorScroll(lenis);
+    initNavBehavior();
+    initDirectionalHover('.nav__link');
     initScrollReveals();
+    initTitleReveals();
+    initProjectMicroInteractions();
     initProjectParallax();
     initManifesto();
-    initHeroPointerParallax();
+    initHeroVisual();
     initMagnetic();
     initMobileMenu();
     initAccordion();
     initProgress();
     initBackToTop(lenis);
+
+    // Stack layout depends on final geometry of the reveal/tilt setup above,
+    // so it's wired last and gets its own refresh once everything settles.
+    initProjectStack();
 
     runLoader(() => {
       revealNav();

@@ -132,6 +132,16 @@ ul { margin: 0; padding: 0; list-style: none; }
   content: '%';
   color: var(--accent);
 }
+.loader__bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+}
 
 /* ============================================
    GRAIN OVERLAY
@@ -204,6 +214,11 @@ ul { margin: 0; padding: 0; list-style: none; }
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
   border-bottom: 1px solid var(--border);
+  transition: height 0.4s var(--ease-out), background 0.4s var(--ease-out);
+}
+.nav.is-compact {
+  height: 60px;
+  background: rgba(252, 252, 253, 0.92);
 }
 .nav__logo {
   font-family: var(--font-display);
@@ -231,13 +246,20 @@ ul { margin: 0; padding: 0; list-style: none; }
   position: absolute;
   left: 0;
   bottom: -4px;
-  width: 0;
+  width: 100%;
   height: 1px;
   background: var(--accent);
-  transition: width 0.35s var(--ease-out);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s var(--ease-out);
 }
 .nav__link:hover { color: var(--ink); }
-.nav__link:hover::after { width: 100%; }
+.nav__link:hover::after {
+  transform: scaleX(1);
+  transform-origin: var(--underline-origin, left);
+}
+.nav__link.is-active { color: var(--ink); }
+.nav__link.is-active::after { transform: scaleX(1); transform-origin: left; }
 .nav__num {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -326,6 +348,14 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-weight: 500;
   letter-spacing: -0.02em;
 }
+.word-reveal {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.word-reveal > span { display: inline-block; }
 
 /* ============================================
    HERO
@@ -448,18 +478,6 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: 50%;
 }
 
-.hero__marquee-mini {
-  max-width: var(--container);
-  margin: 0 auto;
-  width: 100%;
-  padding: 0 var(--gutter);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-
 @media (max-width: 900px) {
   .hero__inner { grid-template-columns: 1fr; }
   .hero__right { order: -1; margin-bottom: 12px; }
@@ -547,6 +565,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   grid-template-columns: 1fr 1fr;
   gap: clamp(24px, 4vw, 64px);
   align-items: center;
+  perspective: 1400px;
 }
 .project--reverse .project__media { order: 2; }
 .project--reverse .project__info { order: 1; }
@@ -556,6 +575,40 @@ ul { margin: 0; padding: 0; list-style: none; }
   overflow: hidden;
   border-radius: 4px;
   aspect-ratio: 4 / 5;
+  will-change: transform;
+}
+
+/* Sticky-stack mode: enabled by JS (GSAP + desktop + motion allowed).
+   Falls back to the plain gapped list above when JS/GSAP is unavailable
+   or prefers-reduced-motion is set. */
+.project-list.is-stacked {
+  gap: 0;
+  padding: 0;
+}
+.project-list.is-stacked .project {
+  position: sticky;
+  top: 0;
+  min-height: 100dvh;
+  padding: 0 var(--gutter);
+  background: var(--bg);
+}
+
+.project__cursor-tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%) scale(0.7);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 13px 22px;
+  border-radius: 999px;
+  will-change: transform, opacity;
 }
 .project__media img {
   width: 100%;
@@ -795,7 +848,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: 50%;
   transition: border-color 0.3s var(--ease-out), transform 0.3s var(--ease-out);
 }
-.footer__social:hover { border-color: var(--accent); transform: translateY(-2px); }
+.footer__social:hover { border-color: var(--accent); transform: translateY(-3px) rotate(-8deg); }
 .footer__bottom {
   max-width: var(--container);
   margin: 0 auto;
@@ -811,9 +864,11 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--ink-soft);
-  transition: color 0.3s var(--ease-out);
+  transition: color 0.3s var(--ease-out), transform 0.2s var(--ease-out);
 }
 .footer__top-btn:hover { color: var(--accent); }
+.footer__top-btn:active { transform: scale(0.95); }
+.footer__social:active { transform: translateY(-1px) scale(0.94); }
 
 /* ============================================
    REVEAL ANIMATION BASE STATES
