@@ -61,6 +61,16 @@
   <div class="cursor__dot"></div>
 </div>
 
+<!-- Ambient flowing-line background - fixed to the viewport so it
+     runs the full length of the page without ever cutting off, sits
+     behind everything in main/footer (see z-index scheme in
+     styles.css), and is naturally covered by any opaque photo/video
+     since those paint above it. -->
+<div class="bg-paths" aria-hidden="true">
+  <svg class="bg-paths__svg" viewBox="0 0 696 316" fill="none" preserveAspectRatio="xMidYMid slice"></svg>
+  <svg class="bg-paths__svg" viewBox="0 0 696 316" fill="none" preserveAspectRatio="xMidYMid slice"></svg>
+</div>
+
 <!-- Grain overlay -->
 <div class="grain" aria-hidden="true"></div>
 
@@ -103,10 +113,6 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-paths" aria-hidden="true">
-      <svg class="hero-paths__svg" viewBox="0 0 696 316" fill="none" preserveAspectRatio="xMidYMid slice"></svg>
-      <svg class="hero-paths__svg" viewBox="0 0 696 316" fill="none" preserveAspectRatio="xMidYMid slice"></svg>
-    </div>
     <div class="hero__inner">
       <div class="hero__left">
         <div class="status-pill" data-reveal>

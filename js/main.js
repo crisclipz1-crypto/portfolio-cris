@@ -647,14 +647,16 @@
   }
 
   /* ============================================
-     HERO PATHS - ambient flowing-line background. Two mirrored SVG
-     layers of curved paths, each with a short dash that loops around
-     it via a CSS animation (see @keyframes hero-path-flow), driven
-     entirely by CSS after this one-time setup - no per-frame JS.
-     Under prefers-reduced-motion the paths still render, just static.
+     BACKGROUND PATHS - ambient flowing-line background, fixed to
+     the viewport so it runs the full length of the page without
+     ever cutting off. Two mirrored SVG layers of curved paths, each
+     with a short dash that loops around it via a CSS animation (see
+     @keyframes hero-path-flow), driven entirely by CSS after this
+     one-time setup - no per-frame JS. Under prefers-reduced-motion
+     the paths still render, just static.
   ============================================= */
-  function initHeroPaths() {
-    const container = document.querySelector('.hero-paths');
+  function initBackgroundPaths() {
+    const container = document.querySelector('.bg-paths');
     if (!container) return;
     const svgs = container.querySelectorAll('svg');
     if (svgs.length < 2) return;
@@ -925,7 +927,7 @@
     initLanguageSwitch();
 
     revealHero();
-    initHeroPaths();
+    initBackgroundPaths();
     initAnchorScroll(lenis);
     initNavBehavior();
     initDirectionalHover('.nav__link');
