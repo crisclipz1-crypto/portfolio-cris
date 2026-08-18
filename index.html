@@ -272,30 +272,18 @@
     </div>
   </section>
 
-  <!-- MORE CUTS (small curated strip, not the full library) -->
-  <section class="reels">
+  <!-- MORE CUTS - 3D rotating gallery. Auto-rotates, drag to spin
+       manually (desktop); falls back to a flat horizontal scroll
+       strip on mobile. Cards built at runtime in initRotatorGallery
+       (js/main.js) from the list of real clips/photos there. -->
+  <section class="rotator">
     <div class="section-head" data-reveal>
       <h2 class="section-title" data-i18n="reelsTitle">More Cuts</h2>
     </div>
+    <p class="rotator-hint" data-reveal data-i18n="rotatorHint">Drag to look around</p>
 
-    <div class="reel-strip" data-reveal>
-      <div class="reel-strip__track">
-        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-08.mp4">
-          <video class="reel-card__preview" poster="assets/media/video/clip-08-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
-            <source src="assets/media/video/clip-08.mp4" type="video/mp4">
-          </video>
-        </button>
-        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-11.mp4">
-          <video class="reel-card__preview" poster="assets/media/video/clip-11-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
-            <source src="assets/media/video/clip-11.mp4" type="video/mp4">
-          </video>
-        </button>
-        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-07.mp4">
-          <video class="reel-card__preview" poster="assets/media/video/clip-07-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
-            <source src="assets/media/video/clip-07.mp4" type="video/mp4">
-          </video>
-        </button>
-      </div>
+    <div class="rotator-stage" id="rotatorStage">
+      <div class="rotator-ring" id="rotatorRing"></div>
     </div>
   </section>
 

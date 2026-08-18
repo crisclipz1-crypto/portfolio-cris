@@ -35,6 +35,7 @@
       serviceBeardTitle: 'Beard Work',
       serviceBeardDesc: "Beard trims, shaping, and hot towel finishes. A sharp cut isn't done until the beard matches it.",
       reelsTitle: 'More Cuts',
+      rotatorHint: 'Drag to look around',
       manifesto: "A good fade isn't rushed. Every line gets checked twice, every edge gets cleaned up, and nothing leaves the chair until it's right.",
       followHeadline: 'See the full catalog on Instagram.',
       followCta: 'Follow @crisclipz',
@@ -65,6 +66,7 @@
       serviceBeardTitle: 'Barba',
       serviceBeardDesc: 'Arreglo, perfilado y toalla caliente. Un corte no está completo hasta que la barba combina.',
       reelsTitle: 'Más cortes',
+      rotatorHint: 'Arrastra para mirar alrededor',
       manifesto: 'Un buen degradado no se apura. Cada línea se revisa dos veces, cada borde se limpia, y nada sale de la silla hasta que está bien.',
       followHeadline: 'Mira el catálogo completo en Instagram.',
       followCta: 'Seguir @crisclipz',
@@ -425,7 +427,7 @@
      to watch.
   ============================================= */
   function initAutoplayVideos() {
-    const videos = document.querySelectorAll('.gallery-item__preview, .reel-card__preview');
+    const videos = document.querySelectorAll('.gallery-item__preview');
     if (!videos.length || reduceMotion) return;
 
     if (!('IntersectionObserver' in window)) {
@@ -481,12 +483,14 @@
       document.body.style.overflow = 'hidden';
     }
 
-    document.querySelectorAll('[data-gallery]').forEach((el) => {
-      el.addEventListener('click', () => {
-        const src = el.getAttribute('data-src');
-        const media = el.getAttribute('data-media');
-        if (src) open(src, media);
-      });
+    // Delegated so it also covers cards the rotator gallery builds
+    // after this runs, without needing a second binding pass.
+    document.addEventListener('click', (e) => {
+      const el = e.target.closest('[data-gallery]');
+      if (!el) return;
+      const src = el.getAttribute('data-src');
+      const media = el.getAttribute('data-media');
+      if (src) open(src, media);
     });
 
     closeBtn.addEventListener('click', close);
@@ -494,6 +498,124 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && lightbox.classList.contains('is-open')) close();
     });
+  }
+
+  /* ============================================
+     MORE CUTS - 3D rotating gallery. Builds the cards, then on
+     desktop arranges them in a ring (rotateY + translateZ per card)
+     that auto-rotates via a GSAP tween and can be spun by dragging;
+     both write to the same rotation value, so they never fight each
+     other for control of the ring's transform. Mobile gets no ring
+     math at all - the same cards just sit in the CSS flex/scroll
+     strip defined for .rotator-ring below 768px.
+  ============================================= */
+  function initRotatorGallery() {
+    const stage = document.getElementById('rotatorStage');
+    const ring = document.getElementById('rotatorRing');
+    if (!stage || !ring) return;
+
+    const items = [
+      { src: 'assets/media/photo/photo-03.jpg', media: 'photo', poster: 'assets/media/photo/photo-03.jpg', alt: 'Taper fade with beard shape-up' },
+      { src: 'assets/media/video/clip-01.mp4', media: 'video', poster: 'assets/media/video/clip-01-poster.jpg', alt: 'Cutting clip' },
+      { src: 'assets/media/video/clip-02.mp4', media: 'video', poster: 'assets/media/video/clip-02-poster.jpg', alt: 'Cutting clip' },
+      { src: 'assets/media/video/clip-03.mp4', media: 'video', poster: 'assets/media/video/clip-03-poster.jpg', alt: 'Cutting clip' },
+      { src: 'assets/media/video/clip-05.mp4', media: 'video', poster: 'assets/media/video/clip-05-poster.jpg', alt: 'Cutting clip' },
+      { src: 'assets/media/video/clip-06.mp4', media: 'video', poster: 'assets/media/video/clip-06-poster.jpg', alt: 'Cutting clip' },
+      { src: 'assets/media/video/clip-07.mp4', media: 'video', poster: 'assets/media/video/clip-07-poster.jpg', alt: 'Cutting clip' },
+      { src: 'assets/media/video/clip-08.mp4', media: 'video', poster: 'assets/media/video/clip-08-poster.jpg', alt: 'Cutting clip' },
+      { src: 'assets/media/video/clip-10.mp4', media: 'video', poster: 'assets/media/video/clip-10-poster.jpg', alt: 'Cutting clip' },
+      { src: 'assets/media/video/clip-11.mp4', media: 'video', poster: 'assets/media/video/clip-11-poster.jpg', alt: 'Cutting clip' }
+    ];
+
+    items.forEach((item) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'rotator-card';
+      card.setAttribute('data-gallery', '');
+      card.setAttribute('data-media', item.media);
+      card.setAttribute('data-src', item.src);
+      const img = document.createElement('img');
+      img.src = item.poster;
+      img.alt = item.alt;
+      img.loading = 'lazy';
+      card.appendChild(img);
+      ring.appendChild(card);
+    });
+
+    if (!hasGSAP || !window.matchMedia('(min-width: 768px)').matches) return;
+
+    const cards = Array.from(ring.querySelectorAll('.rotator-card'));
+    const RADIUS = 380;
+    const angleStep = 360 / cards.length;
+
+    cards.forEach((card, i) => {
+      card.style.transform = `translate(-50%, -50%) rotateY(${i * angleStep}deg) translateZ(${RADIUS}px)`;
+    });
+
+    const state = { rotation: 0 };
+
+    function applyRotation() {
+      ring.style.transform = `rotateY(${state.rotation}deg)`;
+      cards.forEach((card, i) => {
+        const itemAngle = i * angleStep;
+        const relative = ((itemAngle + state.rotation) % 360 + 360) % 360;
+        const normalized = relative > 180 ? 360 - relative : relative;
+        card.style.opacity = String(Math.max(0.25, 1 - normalized / 180));
+      });
+    }
+    applyRotation();
+
+    let autoRotate = null;
+    if (!reduceMotion) {
+      autoRotate = gsap.to(state, {
+        rotation: '+=360',
+        duration: 55,
+        ease: 'none',
+        repeat: -1,
+        onUpdate: applyRotation
+      });
+    }
+
+    let dragging = false;
+    let moved = false;
+    let startX = 0;
+    let startRotation = 0;
+
+    function pointerX(e) { return e.touches ? e.touches[0].clientX : e.clientX; }
+
+    function onDown(e) {
+      dragging = true;
+      moved = false;
+      startX = pointerX(e);
+      startRotation = state.rotation;
+      if (autoRotate) autoRotate.pause();
+      stage.classList.add('is-dragging');
+    }
+    function onMove(e) {
+      if (!dragging) return;
+      const dx = pointerX(e) - startX;
+      if (Math.abs(dx) > 6) moved = true;
+      state.rotation = startRotation + dx * 0.35;
+      applyRotation();
+    }
+    function onUp() {
+      if (!dragging) return;
+      dragging = false;
+      stage.classList.remove('is-dragging');
+      if (autoRotate) autoRotate.resume();
+    }
+
+    stage.addEventListener('mousedown', onDown);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    stage.addEventListener('touchstart', onDown, { passive: true });
+    stage.addEventListener('touchmove', onMove, { passive: true });
+    stage.addEventListener('touchend', onUp);
+
+    // A drag that ends over a card shouldn't also open the lightbox.
+    stage.addEventListener('click', (e) => {
+      if (moved) e.stopPropagation();
+    }, true);
   }
 
   /* ============================================
@@ -811,6 +933,7 @@
     initTitleReveals();
     initGalleryMicroInteractions();
     initAutoplayVideos();
+    initRotatorGallery();
     initLightbox();
     initManifesto();
     initHeroVisual();

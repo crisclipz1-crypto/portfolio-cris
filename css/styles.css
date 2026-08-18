@@ -874,46 +874,6 @@ body.has-custom-cursor button {
   .gallery-item:nth-child(n) { grid-column: 1; grid-row: auto; }
 }
 
-/* ============================================
-   WORK - reel strip (remaining clips, horizontal scroll-snap)
-============================================= */
-.reel-strip {
-  max-width: var(--container);
-  margin: 0 auto 32px;
-  padding: 0 var(--gutter);
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
-}
-.reel-strip::-webkit-scrollbar { display: none; }
-.reel-strip__track {
-  display: flex;
-  gap: 12px;
-  width: max-content;
-}
-.reel-card {
-  position: relative;
-  flex: 0 0 auto;
-  width: 120px;
-  aspect-ratio: 9 / 16;
-  border-radius: 4px;
-  overflow: hidden;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  scroll-snap-align: start;
-}
-.reel-card img,
-.reel-card__preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(0.4);
-  transition: filter 0.4s var(--ease-out), transform 0.6s var(--ease-out);
-}
-.reel-card:hover img,
-.reel-card:hover .reel-card__preview { filter: grayscale(0); transform: scale(1.05); }
-
 .gallery-more {
   max-width: var(--container);
   margin: 0 auto;
@@ -930,11 +890,90 @@ body.has-custom-cursor button {
 .gallery-more:hover svg { transform: translate(3px, -3px); }
 
 /* ============================================
-   MORE CUTS - small curated strip, its own section so it gets
-   breathing room instead of sitting directly under the bento.
+   MORE CUTS - 3D rotating gallery (desktop) / flat horizontal
+   scroll strip (mobile, same markup, media query swaps the layout).
+   Cards are built and positioned by initRotatorGallery in main.js:
+   mobile gets no inline transform and just flows through the flex
+   strip below; desktop gets rotateY()/translateZ() placing each
+   card around a ring, then rotation is driven by a GSAP tween
+   (auto-rotate) or a drag handler, both writing to the same
+   ring.style.transform - never mixed with a CSS transform
+   animation on that element, which is what stalled the accordion
+   and the hero orb earlier in this project.
 ============================================= */
-.reels {
-  padding: clamp(60px, 8vw, 100px) 0 clamp(80px, 10vw, 140px);
+.rotator {
+  padding: clamp(60px, 8vw, 100px) 0 clamp(90px, 11vw, 150px);
+  overflow: hidden;
+}
+.rotator-hint {
+  display: none;
+  max-width: var(--container);
+  margin: 0 auto clamp(20px, 3vw, 32px);
+  padding: 0 var(--gutter);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.rotator-stage {
+  position: relative;
+  height: 300px;
+}
+.rotator-ring {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  height: 100%;
+  padding: 0 var(--gutter);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+.rotator-ring::-webkit-scrollbar { display: none; }
+.rotator-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: 130px;
+  height: 100%;
+  border: none;
+  padding: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+.rotator-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.4);
+  transition: filter 0.4s var(--ease-out);
+}
+.rotator-card:hover img { filter: grayscale(0); }
+
+@media (min-width: 768px) {
+  .rotator-hint { display: block; }
+  .rotator-stage {
+    height: clamp(320px, 40vw, 460px);
+    perspective: 1600px;
+    cursor: grab;
+  }
+  .rotator-stage.is-dragging { cursor: grabbing; }
+  .rotator-ring {
+    display: block;
+    overflow: visible;
+    padding: 0;
+    transform-style: preserve-3d;
+  }
+  .rotator-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 180px;
+    height: 240px;
+    will-change: transform, opacity;
+  }
 }
 
 /* ============================================
