@@ -13,6 +13,11 @@
   Media sourced from assets/media/ (real photos + reels supplied
   directly, not scraped from Instagram). Swap files there and
   update the matching src/data-src attributes to update the gallery.
+
+  Text content is bilingual (EN/ES) via data-i18n keys - see the
+  `translations` dictionary at the top of js/main.js. Add a key
+  there and a data-i18n="key" attribute here to make new text
+  switchable.
 ============================================= -->
 
 <!-- Loader -->
@@ -53,21 +58,24 @@
     <img src="assets/media/logo.jpg" alt="Crisclipz" class="nav__logo-img">
     Crisclipz
   </a>
-  <nav class="nav__links">
-    <a href="#about" class="nav__link"><span class="nav__num">01</span>About</a>
-    <a href="#work" class="nav__link"><span class="nav__num">02</span>Work</a>
-    <a href="#book" class="nav__link"><span class="nav__num">03</span>Book</a>
-  </nav>
-  <button class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
-    <span></span><span></span>
-  </button>
+  <div class="nav__right">
+    <nav class="nav__links">
+      <a href="#about" class="nav__link"><span class="nav__num">01</span><span data-i18n="navAbout">About</span></a>
+      <a href="#work" class="nav__link"><span class="nav__num">02</span><span data-i18n="navWork">Work</span></a>
+      <a href="#book" class="nav__link"><span class="nav__num">03</span><span data-i18n="navBook">Book</span></a>
+    </nav>
+    <button class="lang-switch" id="langSwitch" type="button" aria-label="Switch language">ES</button>
+    <button class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </div>
 </header>
 
 <!-- Mobile menu -->
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#about" class="mobile-menu__link"><span>01</span>About</a>
-  <a href="#work" class="mobile-menu__link"><span>02</span>Work</a>
-  <a href="#book" class="mobile-menu__link"><span>03</span>Book</a>
+  <a href="#about" class="mobile-menu__link"><span>01</span><span data-i18n="navAbout">About</span></a>
+  <a href="#work" class="mobile-menu__link"><span>02</span><span data-i18n="navWork">Work</span></a>
+  <a href="#book" class="mobile-menu__link"><span>03</span><span data-i18n="navBook">Book</span></a>
 </div>
 
 <main id="top">
@@ -78,22 +86,22 @@
       <div class="hero__left">
         <div class="status-pill" data-reveal>
           <span class="status-pill__dot"></span>
-          Houston, TX · Booking open
+          <span data-i18n="heroStatus">Houston, TX · Booking open</span>
         </div>
 
         <h1 class="hero__headline">
-          <span class="hero__line" data-reveal-line>Fades.</span>
-          <span class="hero__line" data-reveal-line>Designs.</span>
-          <span class="hero__line hero__line--accent" data-reveal-line>Beard Work.</span>
+          <span class="hero__line" data-reveal-line data-i18n="heroLine1">Fades.</span>
+          <span class="hero__line" data-reveal-line data-i18n="heroLine2">Designs.</span>
+          <span class="hero__line hero__line--accent" data-reveal-line data-i18n="heroLine3">Beard Work.</span>
         </h1>
 
-        <p class="hero__subtext" data-reveal>
+        <p class="hero__subtext" data-reveal data-i18n="heroSubtext">
           Precision fades, custom designs, and detailed beard work. Booked online, done right.
         </p>
 
         <div class="hero__actions" data-reveal>
           <a href="https://app.bladesvision.com" class="btn btn--primary" data-magnetic target="_blank" rel="noopener">
-            <span>Book Now</span>
+            <span data-i18n="bookNow">Book Now</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
         </div>
@@ -117,14 +125,14 @@
   <section class="about" id="about">
     <div class="section-head" data-reveal>
       <span class="section-num">01</span>
-      <h2 class="section-title">About</h2>
+      <h2 class="section-title" data-i18n="aboutTitle">About</h2>
     </div>
 
     <div class="about__grid">
-      <p class="about__lead" data-reveal>
+      <p class="about__lead" data-reveal data-i18n="aboutLead">
         I'm Cris, a barber based in Houston, TX. Every fade, design, and beard trim gets the same attention: clean lines, sharp precision, no rushed work.
       </p>
-      <p class="about__body" data-reveal>
+      <p class="about__body" data-reveal data-i18n="aboutBody">
         Consistency is the whole job. Whether it's a simple taper or a custom design, the standard doesn't change. Take a look at the work below, then book your spot.
       </p>
     </div>
@@ -133,39 +141,39 @@
   <!-- SKILLS MARQUEE (one marquee per page) -->
   <div class="marquee" data-reveal>
     <div class="marquee__track">
-      <span>Skin Fades</span><span class="marquee__dot">•</span>
-      <span>Taper Fades</span><span class="marquee__dot">•</span>
-      <span>Line-Ups</span><span class="marquee__dot">•</span>
-      <span>Custom Designs</span><span class="marquee__dot">•</span>
-      <span>Beard Sculpting</span><span class="marquee__dot">•</span>
-      <span>Hot Towel Finish</span><span class="marquee__dot">•</span>
-      <span>Skin Fades</span><span class="marquee__dot">•</span>
-      <span>Taper Fades</span><span class="marquee__dot">•</span>
-      <span>Line-Ups</span><span class="marquee__dot">•</span>
-      <span>Custom Designs</span><span class="marquee__dot">•</span>
-      <span>Beard Sculpting</span><span class="marquee__dot">•</span>
-      <span>Hot Towel Finish</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillFade">Skin Fades</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillTaper">Taper Fades</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillLineup">Line-Ups</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillDesign">Custom Designs</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillBeard">Beard Sculpting</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillTowel">Hot Towel Finish</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillFade">Skin Fades</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillTaper">Taper Fades</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillLineup">Line-Ups</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillDesign">Custom Designs</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillBeard">Beard Sculpting</span><span class="marquee__dot">•</span>
+      <span data-i18n="skillTowel">Hot Towel Finish</span><span class="marquee__dot">•</span>
     </div>
   </div>
 
-  <!-- WORK / GALLERY -->
+  <!-- WORK / GALLERY (curated - most striking pieces only) -->
   <section class="work" id="work">
     <div class="section-head" data-reveal>
       <span class="section-num">02</span>
-      <h2 class="section-title">Recent Work</h2>
+      <h2 class="section-title" data-i18n="workTitle">Recent Work</h2>
     </div>
 
     <div class="gallery-grid">
       <button type="button" class="gallery-item" data-gallery data-media="photo" data-src="assets/media/photo/photo-01.jpg" data-reveal>
         <img src="assets/media/photo/photo-01.jpg" alt="Fresh skin fade, styled" loading="lazy">
         <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__tag" aria-hidden="true"><span>View</span></div>
+        <div class="gallery-item__tag" aria-hidden="true"><span data-i18n="tagView">View</span></div>
       </button>
 
       <button type="button" class="gallery-item" data-gallery data-media="photo" data-src="assets/media/photo/photo-02.jpg" data-reveal>
         <img src="assets/media/photo/photo-02.jpg" alt="Fade with a custom hair design" loading="lazy">
         <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__tag" aria-hidden="true"><span>View</span></div>
+        <div class="gallery-item__tag" aria-hidden="true"><span data-i18n="tagView">View</span></div>
       </button>
 
       <button type="button" class="gallery-item gallery-item--video" data-gallery data-media="video" data-src="assets/media/video/clip-04.mp4" data-reveal>
@@ -173,27 +181,7 @@
           <source src="assets/media/video/clip-04.mp4" type="video/mp4">
         </video>
         <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__play" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </div>
-        <div class="gallery-item__tag" aria-hidden="true"><span>Play</span></div>
-      </button>
-
-      <button type="button" class="gallery-item" data-gallery data-media="photo" data-src="assets/media/photo/photo-03.jpg" data-reveal>
-        <img src="assets/media/photo/photo-03.jpg" alt="Taper fade with beard shape-up" loading="lazy">
-        <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__tag" aria-hidden="true"><span>View</span></div>
-      </button>
-
-      <button type="button" class="gallery-item gallery-item--video" data-gallery data-media="video" data-src="assets/media/video/clip-06.mp4" data-reveal>
-        <video class="gallery-item__preview" poster="assets/media/video/clip-06-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
-          <source src="assets/media/video/clip-06.mp4" type="video/mp4">
-        </video>
-        <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__play" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </div>
-        <div class="gallery-item__tag" aria-hidden="true"><span>Play</span></div>
+        <div class="gallery-item__tag" aria-hidden="true"><span data-i18n="tagView">View</span></div>
       </button>
 
       <button type="button" class="gallery-item gallery-item--video" data-gallery data-media="video" data-src="assets/media/video/clip-09.mp4" data-reveal>
@@ -201,82 +189,12 @@
           <source src="assets/media/video/clip-09.mp4" type="video/mp4">
         </video>
         <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__play" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </div>
-        <div class="gallery-item__tag" aria-hidden="true"><span>Play</span></div>
+        <div class="gallery-item__tag" aria-hidden="true"><span data-i18n="tagView">View</span></div>
       </button>
-    </div>
-  </section>
-
-  <!-- FRESH FADES (spotlight - most striking remaining clips) -->
-  <section class="spotlight">
-    <div class="section-head" data-reveal>
-      <h2 class="section-title">Fresh Fades</h2>
-    </div>
-
-    <div class="spotlight-grid">
-      <button type="button" class="gallery-item spotlight-item" data-gallery data-media="video" data-src="assets/media/video/clip-08.mp4" data-reveal>
-        <video class="gallery-item__preview" poster="assets/media/video/clip-08-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
-          <source src="assets/media/video/clip-08.mp4" type="video/mp4">
-        </video>
-        <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__play" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </div>
-        <div class="gallery-item__tag" aria-hidden="true"><span>Play</span></div>
-      </button>
-
-      <button type="button" class="gallery-item spotlight-item" data-gallery data-media="video" data-src="assets/media/video/clip-11.mp4" data-reveal>
-        <video class="gallery-item__preview" poster="assets/media/video/clip-11-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
-          <source src="assets/media/video/clip-11.mp4" type="video/mp4">
-        </video>
-        <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__play" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </div>
-        <div class="gallery-item__tag" aria-hidden="true"><span>Play</span></div>
-      </button>
-    </div>
-  </section>
-
-  <!-- MORE CUTS (remaining clips, horizontal scroll-snap) -->
-  <section class="reels">
-    <div class="section-head" data-reveal>
-      <h2 class="section-title">More Cuts</h2>
-    </div>
-
-    <div class="reel-strip" data-reveal>
-      <div class="reel-strip__track">
-        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-01.mp4">
-          <img src="assets/media/video/clip-01-poster.jpg" alt="Cutting clip" loading="lazy">
-          <span class="reel-card__play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-        </button>
-        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-02.mp4">
-          <img src="assets/media/video/clip-02-poster.jpg" alt="Cutting clip" loading="lazy">
-          <span class="reel-card__play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-        </button>
-        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-03.mp4">
-          <img src="assets/media/video/clip-03-poster.jpg" alt="Cutting clip" loading="lazy">
-          <span class="reel-card__play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-        </button>
-        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-05.mp4">
-          <img src="assets/media/video/clip-05-poster.jpg" alt="Cutting clip" loading="lazy">
-          <span class="reel-card__play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-        </button>
-        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-07.mp4">
-          <img src="assets/media/video/clip-07-poster.jpg" alt="Cutting clip" loading="lazy">
-          <span class="reel-card__play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-        </button>
-        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-10.mp4">
-          <img src="assets/media/video/clip-10-poster.jpg" alt="Cutting clip" loading="lazy">
-          <span class="reel-card__play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-        </button>
-      </div>
     </div>
 
     <a href="https://www.instagram.com/crisclipz" target="_blank" rel="noopener" class="gallery-more" data-reveal>
-      More on Instagram
+      <span data-i18n="moreInstagram">More on Instagram</span>
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
   </section>
@@ -284,19 +202,19 @@
   <!-- SERVICES -->
   <section class="services" id="services">
     <div class="section-head" data-reveal>
-      <h2 class="section-title">Services</h2>
+      <h2 class="section-title" data-i18n="servicesTitle">Services</h2>
     </div>
 
     <div class="accordion" data-reveal>
       <div class="accordion__item is-open" data-accordion-item>
         <button class="accordion__trigger" data-accordion-trigger>
           <span class="accordion__index">01</span>
-          <span class="accordion__title">Fades</span>
+          <span class="accordion__title" data-i18n="serviceFadeTitle">Fades</span>
           <span class="accordion__icon"><span></span><span></span></span>
         </button>
         <div class="accordion__panel">
           <div class="accordion__panel-inner">
-            <p>Skin fades, taper fades, and everything between. Clean fade lines, blended right, every time.</p>
+            <p data-i18n="serviceFadeDesc">Skin fades, taper fades, and everything between. Clean fade lines, blended right, every time.</p>
           </div>
         </div>
       </div>
@@ -304,12 +222,12 @@
       <div class="accordion__item" data-accordion-item>
         <button class="accordion__trigger" data-accordion-trigger>
           <span class="accordion__index">02</span>
-          <span class="accordion__title">Designs</span>
+          <span class="accordion__title" data-i18n="serviceDesignTitle">Designs</span>
           <span class="accordion__icon"><span></span><span></span></span>
         </button>
         <div class="accordion__panel">
           <div class="accordion__panel-inner">
-            <p>Custom line-ups, part designs, and detailed hair art. Bring a reference or let's build one together.</p>
+            <p data-i18n="serviceDesignDesc">Custom line-ups, part designs, and detailed hair art. Bring a reference or let's build one together.</p>
           </div>
         </div>
       </div>
@@ -317,30 +235,57 @@
       <div class="accordion__item" data-accordion-item>
         <button class="accordion__trigger" data-accordion-trigger>
           <span class="accordion__index">03</span>
-          <span class="accordion__title">Beard Work</span>
+          <span class="accordion__title" data-i18n="serviceBeardTitle">Beard Work</span>
           <span class="accordion__icon"><span></span><span></span></span>
         </button>
         <div class="accordion__panel">
           <div class="accordion__panel-inner">
-            <p>Beard trims, shaping, and hot towel finishes. A sharp cut isn't done until the beard matches it.</p>
+            <p data-i18n="serviceBeardDesc">Beard trims, shaping, and hot towel finishes. A sharp cut isn't done until the beard matches it.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- MORE CUTS (small curated strip, not the full library) -->
+  <section class="reels">
+    <div class="section-head" data-reveal>
+      <h2 class="section-title" data-i18n="reelsTitle">More Cuts</h2>
+    </div>
+
+    <div class="reel-strip" data-reveal>
+      <div class="reel-strip__track">
+        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-08.mp4">
+          <video class="reel-card__preview" poster="assets/media/video/clip-08-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
+            <source src="assets/media/video/clip-08.mp4" type="video/mp4">
+          </video>
+        </button>
+        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-11.mp4">
+          <video class="reel-card__preview" poster="assets/media/video/clip-11-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
+            <source src="assets/media/video/clip-11.mp4" type="video/mp4">
+          </video>
+        </button>
+        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-07.mp4">
+          <video class="reel-card__preview" poster="assets/media/video/clip-07-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
+            <source src="assets/media/video/clip-07.mp4" type="video/mp4">
+          </video>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <!-- PHILOSOPHY / MANIFESTO -->
   <section class="manifesto">
-    <p class="manifesto__text" data-reveal-words>
+    <p class="manifesto__text" data-reveal-words data-i18n="manifesto">
       A good fade isn't rushed. Every line gets checked twice, every edge gets cleaned up, and nothing leaves the chair until it's right.
     </p>
   </section>
 
   <!-- FOLLOW (Instagram) -->
   <section class="follow">
-    <h2 class="follow__headline" data-reveal>See the full<br>catalog on Instagram.</h2>
+    <h2 class="follow__headline" data-reveal data-i18n="followHeadline">See the full catalog on Instagram.</h2>
     <a href="https://www.instagram.com/crisclipz" class="btn btn--light" data-magnetic target="_blank" rel="noopener" data-reveal>
-      <span>Follow @crisclipz</span>
+      <span data-i18n="followCta">Follow @crisclipz</span>
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
   </section>
@@ -349,13 +294,13 @@
   <section class="contact" id="book">
     <div class="section-head" data-reveal>
       <span class="section-num">03</span>
-      <h2 class="section-title">Book a Cut</h2>
+      <h2 class="section-title" data-i18n="bookTitle">Book a Cut</h2>
     </div>
 
     <div class="contact__inner" data-reveal>
-      <h3 class="contact__headline">Ready for<br>a fresh cut?</h3>
+      <h3 class="contact__headline" data-i18n="bookHeadline">Ready for a fresh cut?</h3>
       <a href="https://app.bladesvision.com" class="contact__email" data-magnetic target="_blank" rel="noopener">
-        Book Now
+        <span data-i18n="bookNow">Book Now</span>
       </a>
       <p class="contact__phone">Houston, TX · @crisclipz</p>
     </div>
@@ -376,7 +321,7 @@
   <div class="footer__bottom">
     <span>© 2026 Crisclipz</span>
     <span>Houston, TX</span>
-    <button class="footer__top-btn" id="backToTop" aria-label="Back to top">↑ Back to top</button>
+    <button class="footer__top-btn" id="backToTop" aria-label="Back to top"><span data-i18n="backToTop">↑ Back to top</span></button>
   </div>
 </footer>
 

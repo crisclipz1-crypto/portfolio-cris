@@ -9,6 +9,110 @@
   if (hasGSAP) gsap.registerPlugin(ScrollTrigger);
 
   /* ============================================
+     TRANSLATIONS (EN default, ES toggle)
+  ============================================= */
+  const translations = {
+    en: {
+      pageTitle: 'Crisclipz · Houston Barber',
+      navAbout: 'About', navWork: 'Work', navBook: 'Book',
+      heroStatus: 'Houston, TX · Booking open',
+      heroLine1: 'Fades.', heroLine2: 'Designs.', heroLine3: 'Beard Work.',
+      heroSubtext: 'Precision fades, custom designs, and detailed beard work. Booked online, done right.',
+      bookNow: 'Book Now',
+      aboutTitle: 'About',
+      aboutLead: "I'm Cris, a barber based in Houston, TX. Every fade, design, and beard trim gets the same attention: clean lines, sharp precision, no rushed work.",
+      aboutBody: "Consistency is the whole job. Whether it's a simple taper or a custom design, the standard doesn't change. Take a look at the work below, then book your spot.",
+      skillFade: 'Skin Fades', skillTaper: 'Taper Fades', skillLineup: 'Line-Ups',
+      skillDesign: 'Custom Designs', skillBeard: 'Beard Sculpting', skillTowel: 'Hot Towel Finish',
+      workTitle: 'Recent Work',
+      tagView: 'View',
+      moreInstagram: 'More on Instagram',
+      servicesTitle: 'Services',
+      serviceFadeTitle: 'Fades',
+      serviceFadeDesc: 'Skin fades, taper fades, and everything between. Clean fade lines, blended right, every time.',
+      serviceDesignTitle: 'Designs',
+      serviceDesignDesc: "Custom line-ups, part designs, and detailed hair art. Bring a reference or let's build one together.",
+      serviceBeardTitle: 'Beard Work',
+      serviceBeardDesc: "Beard trims, shaping, and hot towel finishes. A sharp cut isn't done until the beard matches it.",
+      reelsTitle: 'More Cuts',
+      manifesto: "A good fade isn't rushed. Every line gets checked twice, every edge gets cleaned up, and nothing leaves the chair until it's right.",
+      followHeadline: 'See the full catalog on Instagram.',
+      followCta: 'Follow @crisclipz',
+      bookTitle: 'Book a Cut',
+      bookHeadline: 'Ready for a fresh cut?',
+      backToTop: '↑ Back to top'
+    },
+    es: {
+      pageTitle: 'Crisclipz · Barbero en Houston',
+      navAbout: 'Sobre mí', navWork: 'Trabajo', navBook: 'Reservar',
+      heroStatus: 'Houston, TX · Reservas abiertas',
+      heroLine1: 'Degradados.', heroLine2: 'Diseños.', heroLine3: 'Barba.',
+      heroSubtext: 'Degradados de precisión, diseños personalizados y trabajo de barba detallado. Reserva en línea, bien hecho.',
+      bookNow: 'Reservar',
+      aboutTitle: 'Sobre mí',
+      aboutLead: 'Soy Cris, barbero en Houston, TX. Cada degradado, diseño y arreglo de barba recibe la misma atención: líneas limpias, precisión y sin apuros.',
+      aboutBody: 'La consistencia es todo el trabajo. Ya sea un corte simple o un diseño personalizado, el estándar no cambia. Mira los trabajos abajo y reserva tu cita.',
+      skillFade: 'Degradado a piel', skillTaper: 'Degradado Taper', skillLineup: 'Delineados',
+      skillDesign: 'Diseños personalizados', skillBeard: 'Esculpido de barba', skillTowel: 'Toalla caliente',
+      workTitle: 'Trabajos recientes',
+      tagView: 'Ver',
+      moreInstagram: 'Más en Instagram',
+      servicesTitle: 'Servicios',
+      serviceFadeTitle: 'Degradados',
+      serviceFadeDesc: 'Degradado a piel, taper y todo lo intermedio. Líneas limpias, bien difuminadas, siempre.',
+      serviceDesignTitle: 'Diseños',
+      serviceDesignDesc: 'Delineados personalizados, diseños de raya y arte capilar detallado. Trae una referencia o lo creamos juntos.',
+      serviceBeardTitle: 'Barba',
+      serviceBeardDesc: 'Arreglo, perfilado y toalla caliente. Un corte no está completo hasta que la barba combina.',
+      reelsTitle: 'Más cortes',
+      manifesto: 'Un buen degradado no se apura. Cada línea se revisa dos veces, cada borde se limpia, y nada sale de la silla hasta que está bien.',
+      followHeadline: 'Mira el catálogo completo en Instagram.',
+      followCta: 'Seguir @crisclipz',
+      bookTitle: 'Reserva un Corte',
+      bookHeadline: '¿Listo para un corte nuevo?',
+      backToTop: '↑ Volver arriba'
+    }
+  };
+
+  function initLanguageSwitch() {
+    const btn = document.getElementById('langSwitch');
+    if (!btn) return;
+
+    function setLangText(el, text) {
+      // Hero lines and the manifesto/section-title words get wrapped
+      // in extra spans by revealHero()/initTitleReveals()/initManifesto()
+      // for the mask-reveal animation. Once that reveal has played,
+      // overwriting textContent (and losing those wrapper spans) is
+      // safe - it just won't replay. The hero line's wrapper is the
+      // one exception worth preserving since it's a simple leaf span.
+      const heroInner = el.querySelector(':scope > .hero__line-inner');
+      if (heroInner) { heroInner.textContent = text; return; }
+      el.textContent = text;
+    }
+
+    function applyLanguage(lang) {
+      const dict = translations[lang];
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key] !== undefined) setLangText(el, dict[key]);
+      });
+      document.documentElement.lang = lang;
+      document.title = dict.pageTitle;
+      btn.textContent = lang === 'en' ? 'ES' : 'EN';
+      localStorage.setItem('site-lang', lang);
+    }
+
+    const saved = localStorage.getItem('site-lang');
+    const initial = saved === 'es' || saved === 'en' ? saved : 'en';
+    applyLanguage(initial);
+
+    btn.addEventListener('click', () => {
+      const current = document.documentElement.lang === 'es' ? 'es' : 'en';
+      applyLanguage(current === 'en' ? 'es' : 'en');
+    });
+  }
+
+  /* ============================================
      LOADER - wordmark wipes in as a duotone fill, the barber-pole
      striped bar tracks the same counter, then the whole panel
      closes into a circle at its own center (iris wipe) to reveal
@@ -313,18 +417,30 @@
   }
 
   /* ============================================
-     GALLERY - hover-to-preview video cells. Muted/looping,
-     preload="none" so the clip only downloads once someone
-     actually hovers, keeping first load light with 11 clips
-     on the page.
+     GALLERY - videos autoplay (muted/looping) once scrolled into
+     view, pause once scrolled away. preload="none" keeps first
+     load light - nothing fetches until a clip is actually about
+     to be visible. Skipped under prefers-reduced-motion, where
+     the poster frame stays put and the lightbox is the only way
+     to watch.
   ============================================= */
-  function initGalleryVideoPreview() {
-    if (noHover) return;
-    document.querySelectorAll('.gallery-item__preview').forEach((video) => {
-      const card = video.closest('.gallery-item');
-      card.addEventListener('mouseenter', () => { video.play().catch(() => {}); });
-      card.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
-    });
+  function initAutoplayVideos() {
+    const videos = document.querySelectorAll('.gallery-item__preview, .reel-card__preview');
+    if (!videos.length || reduceMotion) return;
+
+    if (!('IntersectionObserver' in window)) {
+      videos.forEach((v) => v.play().catch(() => {}));
+      return;
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.play().catch(() => {});
+        else entry.target.pause();
+      });
+    }, { threshold: 0.35 });
+
+    videos.forEach((v) => io.observe(v));
   }
 
   /* ============================================
@@ -631,6 +747,12 @@
   document.addEventListener('DOMContentLoaded', () => {
     const lenis = initSmoothScroll();
 
+    // Language must be applied before the reveal-wrapping functions
+    // below split text into spans (hero lines, section-title words,
+    // the manifesto) so those wrap the correct, already-translated
+    // strings on first paint.
+    initLanguageSwitch();
+
     revealHero();
     initAnchorScroll(lenis);
     initNavBehavior();
@@ -638,7 +760,7 @@
     initScrollReveals();
     initTitleReveals();
     initGalleryMicroInteractions();
-    initGalleryVideoPreview();
+    initAutoplayVideos();
     initLightbox();
     initManifesto();
     initHeroVisual();
