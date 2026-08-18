@@ -9,12 +9,18 @@
   if (hasGSAP) gsap.registerPlugin(ScrollTrigger);
 
   /* ============================================
-     LOADER
+     LOADER - wordmark wipes in as a duotone fill, the barber-pole
+     striped bar tracks the same counter, then the whole panel
+     closes into a circle at its own center (iris wipe) to reveal
+     the page. clip-path is animated by GSAP as a plain string
+     tween (matching shape/param count on both ends), no plugin
+     needed.
   ============================================= */
   function runLoader(onDone) {
     const loader = document.getElementById('loader');
     const countEl = document.getElementById('loaderCount');
     const bar = document.getElementById('loaderBar');
+    const wordFill = document.querySelector('.loader__word-fill');
 
     if (reduceMotion || !hasGSAP) {
       loader.style.display = 'none';
@@ -25,18 +31,19 @@
     const counter = { val: 0 };
     gsap.to(counter, {
       val: 100,
-      duration: 1.1,
+      duration: 1.3,
       ease: 'power2.inOut',
       onUpdate: () => {
         countEl.textContent = Math.round(counter.val);
         bar.style.transform = `scaleX(${counter.val / 100})`;
+        if (wordFill) wordFill.style.clipPath = `inset(0 ${100 - counter.val}% 0 0)`;
       },
       onComplete: () => {
         gsap.to(loader, {
-          yPercent: -100,
-          duration: 0.75,
-          ease: 'expo.inOut',
-          delay: 0.15,
+          clipPath: 'circle(0% at 50% 50%)',
+          duration: 0.85,
+          ease: 'power4.in',
+          delay: 0.2,
           onComplete: () => {
             loader.style.display = 'none';
             onDone();
@@ -209,7 +216,7 @@
      SCROLL REVEALS (sections below hero)
   ============================================= */
   function initScrollReveals() {
-    const targets = document.querySelectorAll('.about [data-reveal], .work [data-reveal], .services [data-reveal], .contact [data-reveal], .marquee[data-reveal]');
+    const targets = document.querySelectorAll('main > section:not(.hero) [data-reveal], main > .marquee[data-reveal]');
 
     if (!hasGSAP || reduceMotion) {
       targets.forEach(el => el.classList.add('is-visible'));
@@ -445,6 +452,49 @@
   }
 
   /* ============================================
+     CUSTOM CURSOR - a small dot tracks the pointer precisely, a
+     ring trails behind it and grows over links/buttons. Hidden
+     entirely over [data-gallery] items, which already show their
+     own cursor-following tag (see initGalleryMicroInteractions) -
+     two things trailing the pointer at once would be clutter.
+  ============================================= */
+  function initCustomCursor() {
+    if (!hasGSAP || reduceMotion || noHover) return;
+
+    const cursor = document.getElementById('cursor');
+    const dot = cursor?.querySelector('.cursor__dot');
+    const ring = cursor?.querySelector('.cursor__ring');
+    if (!cursor || !dot || !ring) return;
+
+    document.body.classList.add('has-custom-cursor');
+
+    const dotX = gsap.quickTo(dot, 'x', { duration: 0.06, ease: 'power2.out' });
+    const dotY = gsap.quickTo(dot, 'y', { duration: 0.06, ease: 'power2.out' });
+    const ringX = gsap.quickTo(ring, 'x', { duration: 0.35, ease: 'power3.out' });
+    const ringY = gsap.quickTo(ring, 'y', { duration: 0.35, ease: 'power3.out' });
+
+    window.addEventListener('mousemove', (e) => {
+      cursor.classList.add('is-active');
+      dotX(e.clientX);
+      dotY(e.clientY);
+      ringX(e.clientX);
+      ringY(e.clientY);
+    });
+
+    document.addEventListener('mouseleave', () => cursor.classList.remove('is-active'));
+
+    document.querySelectorAll('a, button').forEach((el) => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('is-hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('is-hover'));
+    });
+
+    document.querySelectorAll('[data-gallery]').forEach((el) => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('is-gallery'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('is-gallery'));
+    });
+  }
+
+  /* ============================================
      MAGNETIC BUTTONS (+ tactile press feedback)
   ============================================= */
   function initMagnetic() {
@@ -592,6 +642,7 @@
     initLightbox();
     initManifesto();
     initHeroVisual();
+    initCustomCursor();
     initMagnetic();
     initMobileMenu();
     initAccordion();

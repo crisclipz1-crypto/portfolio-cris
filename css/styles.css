@@ -110,6 +110,11 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* ============================================
    LOADER
+   Wordmark reveals as a duotone mask (outline visible from the
+   start, solid fill wipes across in sync with the counter), sitting
+   over a barber-pole-striped progress bar. On complete the whole
+   panel closes into a circle at center (clip-path, GSAP-driven -
+   see main.js) revealing the page beneath.
 ============================================= */
 .loader {
   position: fixed;
@@ -117,31 +122,130 @@ ul { margin: 0; padding: 0; list-style: none; }
   z-index: 300;
   background: var(--bg);
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-start;
-  padding: var(--gutter);
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
+  clip-path: circle(150% at 50% 50%);
+}
+.loader__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+.loader__word {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(32px, 7vw, 76px);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.loader__word-outline {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--border-strong);
+}
+.loader__word-fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: var(--ink);
+  clip-path: inset(0 100% 0 0);
+  will-change: clip-path;
+}
+.loader__meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.loader__bar-track {
+  width: clamp(140px, 22vw, 220px);
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.loader__bar {
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--accent) 0 8px,
+    #fff 8px 16px
+  );
+  animation: barber-stripe 0.6s linear infinite;
+}
+/* 16px stripe period along the 45deg axis = 16*sqrt(2) along a pure
+   X shift, so the loop resets with no visible seam. */
+@keyframes barber-stripe {
+  from { background-position: 0 0; }
+  to { background-position: 22.63px 0; }
 }
 .loader__count {
   font-family: var(--font-mono);
-  font-size: clamp(14px, 2vw, 18px);
+  font-size: 14px;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
+  min-width: 34px;
 }
 .loader__count::after {
   content: '%';
   color: var(--accent);
 }
-.loader__bar {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 100%;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
+
+/* ============================================
+   CUSTOM CURSOR (desktop, hover-capable, motion allowed)
+============================================= */
+body.has-custom-cursor,
+body.has-custom-cursor a,
+body.has-custom-cursor button {
+  cursor: none;
 }
+.cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+}
+.cursor.is-active { opacity: 1; }
+.cursor.is-gallery { opacity: 0; }
+.cursor__dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--accent);
+  will-change: transform;
+}
+.cursor__ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  border-radius: 50%;
+  border: 1px solid var(--accent-line);
+  will-change: transform;
+  transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), margin 0.3s var(--ease-out), border-color 0.3s var(--ease-out), background 0.3s var(--ease-out);
+}
+.cursor.is-hover .cursor__ring {
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+.cursor.is-hover .cursor__dot { opacity: 0; }
 
 /* ============================================
    GRAIN OVERLAY
@@ -721,6 +825,64 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .gallery-more svg { transition: transform 0.3s var(--ease-out); }
 .gallery-more:hover svg { transform: translate(3px, -3px); }
+
+/* ============================================
+   FRESH FADES - spotlight (two clips, asymmetric split -
+   deliberately not a third equal card, see anti-default rules)
+============================================= */
+.spotlight {
+  padding: clamp(60px, 8vw, 100px) 0 clamp(80px, 10vw, 140px);
+}
+.spotlight-grid {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 16px;
+  height: clamp(320px, 42vw, 480px);
+  perspective: 1400px;
+}
+@media (max-width: 767px) {
+  .spotlight-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .spotlight-item { height: 360px; }
+}
+
+/* ============================================
+   MORE CUTS section wrapper
+============================================= */
+.reels {
+  padding-bottom: clamp(80px, 10vw, 140px);
+}
+
+/* ============================================
+   FOLLOW - one deliberate color-block moment (see Page Theme
+   Lock exception in the design guide: allowed once per page).
+============================================= */
+.follow {
+  background: var(--accent);
+  color: #fff;
+  padding: clamp(90px, 12vw, 150px) var(--gutter);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+}
+.follow__headline {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 5vw, 54px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.btn--light {
+  background: #fff;
+  color: var(--accent);
+}
 
 /* ============================================
    LIGHTBOX

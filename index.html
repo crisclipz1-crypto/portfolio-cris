@@ -17,8 +17,22 @@
 
 <!-- Loader -->
 <div class="loader" id="loader" aria-hidden="true">
-  <div class="loader__bar" id="loaderBar"></div>
-  <div class="loader__count"><span id="loaderCount">0</span></div>
+  <div class="loader__inner">
+    <div class="loader__word" aria-hidden="true">
+      <span class="loader__word-fill">CRISCLIPZ</span>
+      <span class="loader__word-outline">CRISCLIPZ</span>
+    </div>
+    <div class="loader__meta">
+      <div class="loader__bar-track"><div class="loader__bar" id="loaderBar"></div></div>
+      <div class="loader__count"><span id="loaderCount">0</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Custom cursor (desktop, hover-capable, motion-allowed only) -->
+<div class="cursor" id="cursor" aria-hidden="true">
+  <div class="cursor__ring"></div>
+  <div class="cursor__dot"></div>
 </div>
 
 <!-- Grain overlay -->
@@ -193,6 +207,44 @@
         <div class="gallery-item__tag" aria-hidden="true"><span>Play</span></div>
       </button>
     </div>
+  </section>
+
+  <!-- FRESH FADES (spotlight - most striking remaining clips) -->
+  <section class="spotlight">
+    <div class="section-head" data-reveal>
+      <h2 class="section-title">Fresh Fades</h2>
+    </div>
+
+    <div class="spotlight-grid">
+      <button type="button" class="gallery-item spotlight-item" data-gallery data-media="video" data-src="assets/media/video/clip-08.mp4" data-reveal>
+        <video class="gallery-item__preview" poster="assets/media/video/clip-08-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
+          <source src="assets/media/video/clip-08.mp4" type="video/mp4">
+        </video>
+        <div class="gallery-item__overlay"></div>
+        <div class="gallery-item__play" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="gallery-item__tag" aria-hidden="true"><span>Play</span></div>
+      </button>
+
+      <button type="button" class="gallery-item spotlight-item" data-gallery data-media="video" data-src="assets/media/video/clip-11.mp4" data-reveal>
+        <video class="gallery-item__preview" poster="assets/media/video/clip-11-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
+          <source src="assets/media/video/clip-11.mp4" type="video/mp4">
+        </video>
+        <div class="gallery-item__overlay"></div>
+        <div class="gallery-item__play" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="gallery-item__tag" aria-hidden="true"><span>Play</span></div>
+      </button>
+    </div>
+  </section>
+
+  <!-- MORE CUTS (remaining clips, horizontal scroll-snap) -->
+  <section class="reels">
+    <div class="section-head" data-reveal>
+      <h2 class="section-title">More Cuts</h2>
+    </div>
 
     <div class="reel-strip" data-reveal>
       <div class="reel-strip__track">
@@ -216,16 +268,8 @@
           <img src="assets/media/video/clip-07-poster.jpg" alt="Cutting clip" loading="lazy">
           <span class="reel-card__play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
         </button>
-        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-08.mp4">
-          <img src="assets/media/video/clip-08-poster.jpg" alt="Cutting clip" loading="lazy">
-          <span class="reel-card__play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-        </button>
         <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-10.mp4">
           <img src="assets/media/video/clip-10-poster.jpg" alt="Cutting clip" loading="lazy">
-          <span class="reel-card__play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-        </button>
-        <button type="button" class="reel-card" data-gallery data-media="video" data-src="assets/media/video/clip-11.mp4">
-          <img src="assets/media/video/clip-11-poster.jpg" alt="Cutting clip" loading="lazy">
           <span class="reel-card__play"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
         </button>
       </div>
@@ -290,6 +334,15 @@
     <p class="manifesto__text" data-reveal-words>
       A good fade isn't rushed. Every line gets checked twice, every edge gets cleaned up, and nothing leaves the chair until it's right.
     </p>
+  </section>
+
+  <!-- FOLLOW (Instagram) -->
+  <section class="follow">
+    <h2 class="follow__headline" data-reveal>See the full<br>catalog on Instagram.</h2>
+    <a href="https://www.instagram.com/crisclipz" class="btn btn--light" data-magnetic target="_blank" rel="noopener" data-reveal>
+      <span>Follow @crisclipz</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
   </section>
 
   <!-- BOOK -->
