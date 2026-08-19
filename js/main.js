@@ -665,7 +665,7 @@
     if (svgs.length < 2) return;
 
     const NS = 'http://www.w3.org/2000/svg';
-    const COUNT = 10;
+    const COUNT = 14;
     const BAND = 316;
     const BAND_PX = 900;
 
@@ -689,9 +689,9 @@
           const path = document.createElementNS(NS, 'path');
           path.setAttribute('d', pathD(i, position, b * BAND));
           path.setAttribute('stroke', 'var(--accent)');
-          path.setAttribute('stroke-width', String(0.5 + i * 0.03));
+          path.setAttribute('stroke-width', String(0.9 + i * 0.06));
           path.setAttribute('fill', 'none');
-          path.style.opacity = String(0.035 + i * 0.006);
+          path.style.opacity = String(0.09 + i * 0.014);
           svg.appendChild(path);
 
           if (!reduceMotion) {
