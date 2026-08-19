@@ -571,18 +571,44 @@
     }
     applyRotation();
 
+    // Paused whenever the section is off-screen or the user is
+    // actively dragging - this ran unconditionally before (GSAP's
+    // repeat:-1 ticking forever from page load to unload, wherever
+    // the user happened to be on the page) and was one of the
+    // biggest sources of dropped frames on the whole site, not just
+    // in this section.
     let autoRotate = null;
+    let dragging = false;
+    let inView = false;
+
+    function syncAutoRotate() {
+      if (!autoRotate) return;
+      if (inView && !dragging) autoRotate.resume();
+      else autoRotate.pause();
+    }
+
     if (!reduceMotion) {
       autoRotate = gsap.to(state, {
         rotation: '+=360',
         duration: 55,
         ease: 'none',
         repeat: -1,
+        paused: true,
         onUpdate: applyRotation
       });
+
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          inView = entries[0].isIntersecting;
+          syncAutoRotate();
+        }, { threshold: 0.15 });
+        io.observe(stage);
+      } else {
+        inView = true;
+        syncAutoRotate();
+      }
     }
 
-    let dragging = false;
     let moved = false;
     let startX = 0;
     let startRotation = 0;
@@ -594,7 +620,7 @@
       moved = false;
       startX = pointerX(e);
       startRotation = state.rotation;
-      if (autoRotate) autoRotate.pause();
+      syncAutoRotate();
       stage.classList.add('is-dragging');
     }
     function onMove(e) {
@@ -608,7 +634,7 @@
       if (!dragging) return;
       dragging = false;
       stage.classList.remove('is-dragging');
-      if (autoRotate) autoRotate.resume();
+      syncAutoRotate();
     }
 
     stage.addEventListener('mousedown', onDown);
@@ -660,9 +686,16 @@
      document height, so it runs top to bottom with nothing left
      uncovered no matter how long the page is. Rebuilt on window
      "load" and on resize (debounced) since those can change the
-     document's height. Each path still loops its own dash via a
-     CSS animation (see @keyframes hero-path-flow) - no per-frame JS.
-     Under prefers-reduced-motion the paths still render, just static.
+     document's height.
+
+     Static by design (no per-path animation): with the pattern tiled
+     across the full page height, an earlier version had upward of
+     150 SVG paths each running their own stroke-dashoffset loop plus
+     a drop-shadow filter - continuous repaint work on that many
+     elements, everywhere on the page, was the single biggest cause
+     of dropped frames on this site. A big, richly-colored static
+     background costs one paint; the animated version cost one every
+     frame, forever.
   ============================================= */
   function initBackgroundPaths() {
     const container = document.querySelector('.bg-paths');
@@ -671,7 +704,7 @@
     if (svgs.length < 2) return;
 
     const NS = 'http://www.w3.org/2000/svg';
-    const COUNT = 14;
+    const COUNT = 11;
     const BAND = 316;
     const BAND_PX = 900;
 
@@ -699,23 +732,6 @@
           path.setAttribute('fill', 'none');
           path.style.opacity = String(0.09 + i * 0.014);
           svg.appendChild(path);
-
-          if (!reduceMotion) {
-            // Most of each path's arc length falls outside the
-            // 696-wide band (the curves are drawn far larger than
-            // the visible strip on purpose, same as the source
-            // component). A short "comet" dash would spend most of
-            // its cycle outside that strip and rarely be seen, so
-            // the dash covers most of the path instead - the
-            // animated offset then reads as a slow gap drifting
-            // through, not the line disappearing.
-            const len = path.getTotalLength();
-            path.style.strokeDasharray = `${len * 0.75} ${len * 0.25}`;
-            path.style.setProperty('--path-len', String(len));
-            const duration = 16 + Math.random() * 12;
-            path.style.animation = `hero-path-flow ${duration}s linear infinite`;
-            path.style.animationDelay = `-${Math.random() * duration}s`;
-          }
         }
       }
     }
@@ -861,7 +877,11 @@
      reads as a spotlight scrubbing over a second, hidden text layer
      rather than something dragging text along with it. The chase
      uses a plain rAF lerp (not GSAP) since it needs to keep running
-     whether or not GSAP happened to load.
+     whether or not GSAP happened to load. The loop only runs while
+     the cursor is actually over the element - it used to run
+     forever from page load regardless of whether anyone was near
+     it, which added a permanent per-frame cost for an effect that's
+     only ever visible during a hover.
   ============================================= */
   function initMagneticText() {
     if (reduceMotion || noHover) return;
@@ -873,6 +893,8 @@
 
       const circleSize = el.dataset.circleSize || '160';
       let mouseX = 0, mouseY = 0, curX = 0, curY = 0;
+      let hovered = false;
+      let rafId = null;
 
       function sizeInner() {
         inner.style.width = el.offsetWidth + 'px';
@@ -886,9 +908,11 @@
         curY += (mouseY - curY) * 0.15;
         circle.style.transform = `translate(${curX}px, ${curY}px) translate(-50%, -50%)`;
         inner.style.transform = `translate(${-curX}px, ${-curY}px)`;
-        requestAnimationFrame(animate);
+        rafId = hovered ? requestAnimationFrame(animate) : null;
       }
-      requestAnimationFrame(animate);
+      function startLoop() {
+        if (rafId === null) rafId = requestAnimationFrame(animate);
+      }
 
       el.addEventListener('mousemove', (e) => {
         const rect = el.getBoundingClientRect();
@@ -899,10 +923,13 @@
         const rect = el.getBoundingClientRect();
         mouseX = curX = e.clientX - rect.left;
         mouseY = curY = e.clientY - rect.top;
+        hovered = true;
         circle.style.width = circleSize + 'px';
         circle.style.height = circleSize + 'px';
+        startLoop();
       });
       el.addEventListener('mouseleave', () => {
+        hovered = false;
         circle.style.width = '0';
         circle.style.height = '0';
       });
