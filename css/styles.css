@@ -363,9 +363,25 @@ body.has-custom-cursor button {
 }
 .bg-paths__svg {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -2%;
+  width: 104%;
+  height: 104%;
+}
+/* One drifting transform per layer instead of per path - two cheap,
+   GPU-composited animations instead of the ~170 individual
+   stroke-dashoffset loops (plus a filter) this used to run, which
+   was the main cause of dropped frames on the whole site. The 2%
+   oversize + inset above keeps the drift from ever revealing an
+   edge. */
+.bg-paths__svg:first-child { animation: bg-paths-drift-a 28s ease-in-out infinite; }
+.bg-paths__svg:last-child { animation: bg-paths-drift-b 34s ease-in-out infinite; }
+@keyframes bg-paths-drift-a {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(16px, -12px); }
+}
+@keyframes bg-paths-drift-b {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-14px, 14px); }
 }
 
 /* Content sits above the paths layer; the grain/nav/overlays above
