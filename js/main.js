@@ -22,6 +22,8 @@
       aboutTitle: 'About',
       aboutLead: "I'm Cris, a barber based in Houston, TX. Every fade, design, and beard trim gets the same attention: clean lines, sharp precision, no rushed work.",
       aboutBody: "Consistency is the whole job. Whether it's a simple taper or a custom design, the standard doesn't change. Take a look at the work below, then book your spot.",
+      magneticBase: 'Skill',
+      magneticHover: 'Craft',
       skillFade: 'Skin Fades', skillTaper: 'Taper Fades', skillLineup: 'Line-Ups',
       skillDesign: 'Custom Designs', skillBeard: 'Beard Sculpting', skillTowel: 'Hot Towel Finish',
       workTitle: 'Recent Work',
@@ -53,6 +55,8 @@
       aboutTitle: 'Sobre mí',
       aboutLead: 'Soy Cris, barbero en Houston, TX. Cada degradado, diseño y arreglo de barba recibe la misma atención: líneas limpias, precisión y sin apuros.',
       aboutBody: 'La consistencia es todo el trabajo. Ya sea un corte simple o un diseño personalizado, el estándar no cambia. Mira los trabajos abajo y reserva tu cita.',
+      magneticBase: 'Oficio',
+      magneticHover: 'Detalle',
       skillFade: 'Degradado a piel', skillTaper: 'Degradado Taper', skillLineup: 'Delineados',
       skillDesign: 'Diseños personalizados', skillBeard: 'Esculpido de barba', skillTowel: 'Toalla caliente',
       workTitle: 'Trabajos recientes',
@@ -848,6 +852,61 @@
   }
 
   /* ============================================
+     MAGNETIC TEXT - a colored circle chases the cursor over the
+     base word. Inside the circle sits the hover word, translated by
+     the exact inverse of the circle's own offset so it stays pinned
+     to the container regardless of where the circle is - the circle
+     reads as a spotlight scrubbing over a second, hidden text layer
+     rather than something dragging text along with it. The chase
+     uses a plain rAF lerp (not GSAP) since it needs to keep running
+     whether or not GSAP happened to load.
+  ============================================= */
+  function initMagneticText() {
+    if (reduceMotion || noHover) return;
+
+    document.querySelectorAll('.magnetic-text').forEach((el) => {
+      const circle = el.querySelector('.magnetic-text__circle');
+      const inner = el.querySelector('.magnetic-text__inner');
+      if (!circle || !inner) return;
+
+      let mouseX = 0, mouseY = 0, curX = 0, curY = 0;
+
+      function sizeInner() {
+        inner.style.width = el.offsetWidth + 'px';
+        inner.style.height = el.offsetHeight + 'px';
+      }
+      sizeInner();
+      window.addEventListener('resize', sizeInner);
+
+      function animate() {
+        curX += (mouseX - curX) * 0.15;
+        curY += (mouseY - curY) * 0.15;
+        circle.style.transform = `translate(${curX}px, ${curY}px) translate(-50%, -50%)`;
+        inner.style.transform = `translate(${-curX}px, ${-curY}px)`;
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+      });
+      el.addEventListener('mouseenter', (e) => {
+        const rect = el.getBoundingClientRect();
+        mouseX = curX = e.clientX - rect.left;
+        mouseY = curY = e.clientY - rect.top;
+        circle.style.width = '160px';
+        circle.style.height = '160px';
+      });
+      el.addEventListener('mouseleave', () => {
+        circle.style.width = '0';
+        circle.style.height = '0';
+      });
+    });
+  }
+
+  /* ============================================
      MOBILE MENU
   ============================================= */
   function initMobileMenu() {
@@ -980,6 +1039,7 @@
     initHeroVisual();
     initCustomCursor();
     initMagnetic();
+    initMagneticText();
     initMobileMenu();
     initAccordion();
     initProgress();

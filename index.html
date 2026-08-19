@@ -168,6 +168,22 @@
     </div>
   </section>
 
+  <!-- MAGNETIC TEXT - hover reveals the brand name inside a circle
+       that chases the cursor. Skipped entirely on touch/no-hover
+       devices and under prefers-reduced-motion (see initMagneticText
+       in main.js), since it's a pure hover flourish with nothing to
+       show without a pointer. -->
+  <section class="magnetic">
+    <div class="magnetic-text" id="magneticText" data-reveal>
+      <span class="magnetic-text__base" data-i18n="magneticBase">Skill</span>
+      <div class="magnetic-text__circle">
+        <div class="magnetic-text__inner">
+          <span class="magnetic-text__hover" data-i18n="magneticHover">Craft</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- SKILLS MARQUEE (one marquee per page) -->
   <div class="marquee" data-reveal>
     <div class="marquee__track">

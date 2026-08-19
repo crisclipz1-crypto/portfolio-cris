@@ -768,6 +768,60 @@ main, .footer {
 }
 
 /* ============================================
+   MAGNETIC TEXT - a circle chases the cursor over the base word;
+   inside the circle the hover word renders at a counter-translated
+   position so it stays visually pinned to the container regardless
+   of where the circle currently is, reading as a spotlight scrubbing
+   over a second, hidden layer of text. Built by initMagneticText in
+   main.js (desktop/hover-capable + motion-allowed only).
+============================================= */
+.magnetic {
+  padding: clamp(50px, 7vw, 90px) var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.magnetic-text {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.magnetic-text__base,
+.magnetic-text__hover {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(44px, 8.5vw, 110px);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.magnetic-text__base { color: var(--ink); }
+.magnetic-text__hover { color: #fff; }
+.magnetic-text__circle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  overflow: hidden;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  will-change: transform, width, height;
+  transition: width 0.5s cubic-bezier(0.33, 1, 0.68, 1), height 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.magnetic-text__inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+/* ============================================
    MARQUEE
 ============================================= */
 .marquee {
