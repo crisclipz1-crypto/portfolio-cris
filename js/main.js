@@ -22,8 +22,8 @@
       aboutTitle: 'About',
       aboutLead: "I'm Cris, a barber based in Houston, TX. Every fade, design, and beard trim gets the same attention: clean lines, sharp precision, no rushed work.",
       aboutBody: "Consistency is the whole job. Whether it's a simple taper or a custom design, the standard doesn't change. Take a look at the work below, then book your spot.",
-      magneticBase: 'Skill',
-      magneticHover: 'Craft',
+      magneticBase: 'Clean Lines',
+      magneticHover: 'Sharp Precision',
       skillFade: 'Skin Fades', skillTaper: 'Taper Fades', skillLineup: 'Line-Ups',
       skillDesign: 'Custom Designs', skillBeard: 'Beard Sculpting', skillTowel: 'Hot Towel Finish',
       workTitle: 'Recent Work',
@@ -43,6 +43,7 @@
       followCta: 'Follow @crisclipz',
       bookTitle: 'Book a Cut',
       bookHeadline: 'Ready for a fresh cut?',
+      bookHeadlineHover: "Then let's get started.",
       backToTop: '↑ Back to top'
     },
     es: {
@@ -55,8 +56,8 @@
       aboutTitle: 'Sobre mí',
       aboutLead: 'Soy Cris, barbero en Houston, TX. Cada degradado, diseño y arreglo de barba recibe la misma atención: líneas limpias, precisión y sin apuros.',
       aboutBody: 'La consistencia es todo el trabajo. Ya sea un corte simple o un diseño personalizado, el estándar no cambia. Mira los trabajos abajo y reserva tu cita.',
-      magneticBase: 'Oficio',
-      magneticHover: 'Detalle',
+      magneticBase: 'Líneas Limpias',
+      magneticHover: 'Precisión Total',
       skillFade: 'Degradado a piel', skillTaper: 'Degradado Taper', skillLineup: 'Delineados',
       skillDesign: 'Diseños personalizados', skillBeard: 'Esculpido de barba', skillTowel: 'Toalla caliente',
       workTitle: 'Trabajos recientes',
@@ -76,6 +77,7 @@
       followCta: 'Seguir @crisclipz',
       bookTitle: 'Reserva un Corte',
       bookHeadline: '¿Listo para un corte nuevo?',
+      bookHeadlineHover: 'Entonces empecemos ya.',
       backToTop: '↑ Volver arriba'
     }
   };
@@ -869,6 +871,7 @@
       const inner = el.querySelector('.magnetic-text__inner');
       if (!circle || !inner) return;
 
+      const circleSize = el.dataset.circleSize || '160';
       let mouseX = 0, mouseY = 0, curX = 0, curY = 0;
 
       function sizeInner() {
@@ -896,8 +899,8 @@
         const rect = el.getBoundingClientRect();
         mouseX = curX = e.clientX - rect.left;
         mouseY = curY = e.clientY - rect.top;
-        circle.style.width = '160px';
-        circle.style.height = '160px';
+        circle.style.width = circleSize + 'px';
+        circle.style.height = circleSize + 'px';
       });
       el.addEventListener('mouseleave', () => {
         circle.style.width = '0';
@@ -972,35 +975,6 @@
   }
 
   /* ============================================
-     SCROLL PROGRESS (ring + label) - via ScrollTrigger, no raw scroll listener
-  ============================================= */
-  function initProgress() {
-    const fill = document.querySelector('.progress-ring__fill');
-    const label = document.getElementById('progressLabel');
-    if (!fill || !label) return;
-
-    const CIRCUMFERENCE = 138.2;
-
-    function update(progress) {
-      const offset = CIRCUMFERENCE * (1 - progress);
-      fill.style.strokeDashoffset = String(offset);
-      label.textContent = Math.round(progress * 100) + '%';
-    }
-
-    if (!hasGSAP) {
-      update(0);
-      return;
-    }
-
-    ScrollTrigger.create({
-      trigger: document.body,
-      start: 'top top',
-      end: 'bottom bottom',
-      onUpdate: (self) => update(self.progress)
-    });
-  }
-
-  /* ============================================
      BACK TO TOP
   ============================================= */
   function initBackToTop(lenis) {
@@ -1042,7 +1016,6 @@
     initMagneticText();
     initMobileMenu();
     initAccordion();
-    initProgress();
     initBackToTop(lenis);
 
     runLoader(() => {

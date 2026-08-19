@@ -74,15 +74,6 @@
 <!-- Grain overlay -->
 <div class="grain" aria-hidden="true"></div>
 
-<!-- Custom scroll progress ring (bottom right) -->
-<div class="progress-ring" aria-hidden="true">
-  <svg width="52" height="52" viewBox="0 0 52 52">
-    <circle class="progress-ring__track" cx="26" cy="26" r="22"></circle>
-    <circle class="progress-ring__fill" cx="26" cy="26" r="22"></circle>
-  </svg>
-  <span class="progress-ring__label" id="progressLabel">0%</span>
-</div>
-
 <!-- Nav -->
 <header class="nav" data-reveal-nav>
   <a href="#top" class="nav__logo" aria-label="Crisclipz">
@@ -154,7 +145,6 @@
   <!-- ABOUT -->
   <section class="about" id="about">
     <div class="section-head" data-reveal>
-      <span class="section-num">01</span>
       <h2 class="section-title" data-i18n="aboutTitle">About</h2>
     </div>
 
@@ -175,10 +165,10 @@
        show without a pointer. -->
   <section class="magnetic">
     <div class="magnetic-text" id="magneticText" data-reveal>
-      <span class="magnetic-text__base" data-i18n="magneticBase">Skill</span>
+      <span class="magnetic-text__base" data-i18n="magneticBase">Clean Lines</span>
       <div class="magnetic-text__circle">
         <div class="magnetic-text__inner">
-          <span class="magnetic-text__hover" data-i18n="magneticHover">Craft</span>
+          <span class="magnetic-text__hover" data-i18n="magneticHover">Sharp Precision</span>
         </div>
       </div>
     </div>
@@ -205,7 +195,6 @@
   <!-- WORK / GALLERY (curated - most striking pieces only) -->
   <section class="work" id="work">
     <div class="section-head" data-reveal>
-      <span class="section-num">02</span>
       <h2 class="section-title" data-i18n="workTitle">Recent Work</h2>
     </div>
 
@@ -327,12 +316,18 @@
   <!-- BOOK -->
   <section class="contact" id="book">
     <div class="section-head" data-reveal>
-      <span class="section-num">03</span>
       <h2 class="section-title" data-i18n="bookTitle">Book a Cut</h2>
     </div>
 
     <div class="contact__inner" data-reveal>
-      <h3 class="contact__headline" data-i18n="bookHeadline">Ready for a fresh cut?</h3>
+      <div class="magnetic-text magnetic-text--headline" id="magneticHeadline" data-circle-size="240">
+        <h3 class="contact__headline magnetic-text__base" data-i18n="bookHeadline">Ready for a fresh cut?</h3>
+        <div class="magnetic-text__circle">
+          <div class="magnetic-text__inner">
+            <span class="contact__headline-hover magnetic-text__hover" data-i18n="bookHeadlineHover" aria-hidden="true">Then let's get started.</span>
+          </div>
+        </div>
+      </div>
       <a href="https://app.bladesvision.com" class="contact__email" data-magnetic target="_blank" rel="noopener">
         <span data-i18n="bookNow">Book Now</span>
       </a>

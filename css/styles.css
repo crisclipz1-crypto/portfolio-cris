@@ -394,45 +394,6 @@ main, .footer {
 }
 
 /* ============================================
-   PROGRESS RING
-============================================= */
-.progress-ring {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  z-index: 150;
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.progress-ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
-.progress-ring__track {
-  fill: none;
-  stroke: var(--border);
-  stroke-width: 2;
-}
-.progress-ring__fill {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 138.2;
-  stroke-dashoffset: 138.2;
-  transition: stroke-dashoffset 0.1s linear;
-}
-.progress-ring__label {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-}
-@media (max-width: 767px) {
-  .progress-ring { display: none; }
-}
-
-/* ============================================
    NAV
 ============================================= */
 .nav {
@@ -462,15 +423,15 @@ main, .footer {
   align-items: center;
 }
 .nav__logo-img {
-  width: 44px;
-  height: 44px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   object-fit: cover;
   transition: width 0.4s var(--ease-out), height 0.4s var(--ease-out);
 }
 .nav.is-compact .nav__logo-img {
-  width: 36px;
-  height: 36px;
+  width: 46px;
+  height: 46px;
 }
 .nav__right {
   display: flex;
@@ -586,11 +547,6 @@ main, .footer {
   align-items: baseline;
   gap: 16px;
   margin-bottom: clamp(40px, 6vw, 72px);
-}
-.section-num {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--accent);
 }
 .section-title {
   font-family: var(--font-display);
@@ -787,8 +743,12 @@ main, .footer {
   align-items: center;
   justify-content: center;
 }
-.magnetic-text__base,
-.magnetic-text__hover {
+/* Typography is scoped to the standalone showcase section rather
+   than set generically, so the Book headline below can reuse the
+   same hover-circle structure while keeping its own (much larger,
+   wrapping) heading type. */
+.magnetic .magnetic-text__base,
+.magnetic .magnetic-text__hover {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(44px, 8.5vw, 110px);
@@ -1208,14 +1168,15 @@ main, .footer {
   padding: 0 var(--gutter);
   text-align: center;
 }
-.contact__headline {
+.contact__headline,
+.contact__headline-hover {
   font-family: var(--font-display);
   font-size: clamp(48px, 9vw, 120px);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 0.98;
-  margin-bottom: 40px;
 }
+.magnetic-text--headline { margin-bottom: 40px; }
 .contact__email {
   display: inline-block;
   font-family: var(--font-display);
