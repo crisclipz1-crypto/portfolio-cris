@@ -766,10 +766,11 @@
 
   /* ============================================
      CUSTOM CURSOR - a small dot tracks the pointer precisely, a
-     ring trails behind it and grows over links/buttons. Hidden
-     entirely over [data-gallery] items, which already show their
-     own cursor-following tag (see initGalleryMicroInteractions) -
-     two things trailing the pointer at once would be clutter.
+     ring trails behind it and grows over links/buttons (including
+     gallery items - they used to show their own cursor-following
+     tag instead and hid this cursor, but that tag doesn't exist
+     anymore, so hiding this cursor there left nothing visible at
+     all over the whole gallery).
   ============================================= */
   function initCustomCursor() {
     if (!hasGSAP || reduceMotion || noHover) return;
@@ -799,11 +800,6 @@
     document.querySelectorAll('a, button').forEach((el) => {
       el.addEventListener('mouseenter', () => cursor.classList.add('is-hover'));
       el.addEventListener('mouseleave', () => cursor.classList.remove('is-hover'));
-    });
-
-    document.querySelectorAll('[data-gallery]').forEach((el) => {
-      el.addEventListener('mouseenter', () => cursor.classList.add('is-gallery'));
-      el.addEventListener('mouseleave', () => cursor.classList.remove('is-gallery'));
     });
   }
 

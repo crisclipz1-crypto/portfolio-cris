@@ -307,7 +307,6 @@ body.has-custom-cursor button {
   transition: opacity 0.3s var(--ease-out);
 }
 .cursor.is-active { opacity: 1; }
-.cursor.is-gallery { opacity: 0; }
 .cursor__dot {
   position: absolute;
   top: 0;
@@ -860,7 +859,7 @@ main, .footer {
 }
 .gallery-expand__item:hover,
 .gallery-expand__item:focus-visible {
-  flex-grow: 5;
+  flex-grow: 2.2;
 }
 .gallery-expand__item img,
 .gallery-expand__item .gallery-item__preview {
