@@ -855,11 +855,15 @@ main, .footer {
   border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
-  transition: flex-grow 0.5s var(--ease-out);
+  /* Slow, gentle curve (not the snappier --ease-out used elsewhere)
+     since flex-grow drives an actual layout reflow, not just a
+     compositor transform - a longer, smoother ease reads as an
+     intentional zoom instead of a sudden jump. */
+  transition: flex-grow 0.9s cubic-bezier(0.65, 0, 0.35, 1);
 }
 .gallery-expand__item:hover,
 .gallery-expand__item:focus-visible {
-  flex-grow: 2.2;
+  flex-grow: 1.8;
 }
 .gallery-expand__item img,
 .gallery-expand__item .gallery-item__preview {
@@ -867,10 +871,12 @@ main, .footer {
   height: 100%;
   object-fit: cover;
   filter: grayscale(0.5) contrast(1.05);
-  transition: filter 0.5s var(--ease-out);
+  transform: scale(1);
+  transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1), filter 0.6s ease;
 }
 .gallery-expand__item:hover img,
 .gallery-expand__item:hover .gallery-item__preview {
+  transform: scale(1.09);
   filter: grayscale(0) contrast(1);
 }
 @media (max-width: 767px) {
