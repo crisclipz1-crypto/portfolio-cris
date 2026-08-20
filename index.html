@@ -198,33 +198,29 @@
       <h2 class="section-title" data-i18n="workTitle">Recent Work</h2>
     </div>
 
-    <div class="gallery-grid">
-      <button type="button" class="gallery-item" data-gallery data-media="photo" data-src="assets/media/photo/photo-01.jpg" data-reveal>
+    <!-- Expand-on-hover gallery: each panel is a flex item that grows
+         to take over the row on hover/focus, the rest compress down
+         to a sliver. Falls back to a flat horizontal scroll strip on
+         touch/mobile, where hover has no meaning. -->
+    <div class="gallery-expand">
+      <button type="button" class="gallery-expand__item" data-gallery data-media="photo" data-src="assets/media/photo/photo-01.jpg" data-reveal>
         <img src="assets/media/photo/photo-01.jpg" alt="Fresh skin fade, styled" loading="lazy">
-        <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__tag" aria-hidden="true"><span data-i18n="tagView">View</span></div>
       </button>
 
-      <button type="button" class="gallery-item" data-gallery data-media="photo" data-src="assets/media/photo/photo-02.jpg" data-reveal>
+      <button type="button" class="gallery-expand__item" data-gallery data-media="photo" data-src="assets/media/photo/photo-02.jpg" data-reveal>
         <img src="assets/media/photo/photo-02.jpg" alt="Fade with a custom hair design" loading="lazy">
-        <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__tag" aria-hidden="true"><span data-i18n="tagView">View</span></div>
       </button>
 
-      <button type="button" class="gallery-item gallery-item--video" data-gallery data-media="video" data-src="assets/media/video/clip-04.mp4" data-reveal>
+      <button type="button" class="gallery-expand__item" data-gallery data-media="video" data-src="assets/media/video/clip-04.mp4" data-reveal>
         <video class="gallery-item__preview" poster="assets/media/video/clip-04-poster.jpg" muted loop playsinline preload="none" aria-label="Fade reveal, video clip">
           <source src="assets/media/video/clip-04.mp4" type="video/mp4">
         </video>
-        <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__tag" aria-hidden="true"><span data-i18n="tagView">View</span></div>
       </button>
 
-      <button type="button" class="gallery-item gallery-item--video" data-gallery data-media="video" data-src="assets/media/video/clip-09.mp4" data-reveal>
+      <button type="button" class="gallery-expand__item" data-gallery data-media="video" data-src="assets/media/video/clip-09.mp4" data-reveal>
         <video class="gallery-item__preview" poster="assets/media/video/clip-09-poster.jpg" muted loop playsinline preload="none" aria-label="Cutting clip">
           <source src="assets/media/video/clip-09.mp4" type="video/mp4">
         </video>
-        <div class="gallery-item__overlay"></div>
-        <div class="gallery-item__tag" aria-hidden="true"><span data-i18n="tagView">View</span></div>
       </button>
     </div>
 

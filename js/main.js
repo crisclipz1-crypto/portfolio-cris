@@ -388,43 +388,6 @@
   }
 
   /* ============================================
-     GALLERY - 3D tilt + cursor-following tag (bento cells only,
-     the small reel-strip cards stay flat, see 4.5 "not every
-     card needs" restraint).
-  ============================================= */
-  function initGalleryMicroInteractions() {
-    if (!hasGSAP || reduceMotion || noHover) return;
-
-    document.querySelectorAll('.gallery-item').forEach((card) => {
-      const tag = card.querySelector('.gallery-item__tag');
-
-      const rotateXTo = gsap.quickTo(card, 'rotateX', { duration: 0.6, ease: 'power3.out' });
-      const rotateYTo = gsap.quickTo(card, 'rotateY', { duration: 0.6, ease: 'power3.out' });
-      const tagXTo = tag ? gsap.quickTo(tag, 'x', { duration: 0.4, ease: 'power3.out' }) : null;
-      const tagYTo = tag ? gsap.quickTo(tag, 'y', { duration: 0.4, ease: 'power3.out' }) : null;
-
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const relX = (e.clientX - rect.left) / rect.width - 0.5;
-        const relY = (e.clientY - rect.top) / rect.height - 0.5;
-        rotateYTo(relX * 8);
-        rotateXTo(relY * -8);
-        if (tagXTo) { tagXTo(e.clientX - rect.left); tagYTo(e.clientY - rect.top); }
-      });
-
-      card.addEventListener('mouseenter', () => {
-        if (tag) gsap.to(tag, { opacity: 1, scale: 1, duration: 0.35, ease: 'power3.out' });
-      });
-
-      card.addEventListener('mouseleave', () => {
-        rotateXTo(0);
-        rotateYTo(0);
-        if (tag) gsap.to(tag, { opacity: 0, scale: 0.7, duration: 0.25, ease: 'power3.in' });
-      });
-    });
-  }
-
-  /* ============================================
      GALLERY - videos autoplay (muted/looping) once scrolled into
      view, pause once scrolled away. preload="none" keeps first
      load light - nothing fetches until a clip is actually about
@@ -1032,7 +995,6 @@
     initDirectionalHover('.nav__link');
     initScrollReveals();
     initTitleReveals();
-    initGalleryMicroInteractions();
     initAutoplayVideos();
     initRotatorGallery();
     initLightbox();
